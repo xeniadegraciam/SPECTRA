@@ -39,7 +39,11 @@ main { padding:24px 32px 50px 32px; }
 .controls { padding:16px; margin-bottom:20px; }
 label { display:block; font-weight:650; margin-bottom:8px; }
 select { padding:8px; min-width:360px; border:1px solid #d1d5db; border-radius:6px; background:white; }
-.plot-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+.plot-grid {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:20px;
+}
 .plot-card { padding:8px; }
 .section-title { margin-top:30px; margin-bottom:12px; font-size:21px; }
 table { width:100%; border-collapse:collapse; background:white; border:1px solid #e5e7eb; font-size:13px; }
@@ -110,6 +114,7 @@ tr:hover { background:#f9fafb; }
 <section class="plot-grid">
 <div class="plot-card"><div id="preedgePlot"></div></div>
 <div class="plot-card"><div id="xanesPlot"></div></div>
+<div class="plot-card"><div id="exafsPlot"></div></div>
 <div class="plot-card"><div id="ftPlot"></div></div>
 </section>
 
@@ -150,6 +155,7 @@ let selectedBeamline = "";
 // ✅ Cache files after first load to reduce repeated GitHub requests
 const xanesCache = {};
 const preedgeCache = {};
+const chiCache = {};
 const ftCache = {};
 const metadataCache = {};
 
@@ -161,12 +167,28 @@ const elementInfo = {
   "Pb": {"name":"Lead", "edge":"L3-edge", "color":"#7F7F7F", "dark_color":"#404040", "text_color":"white"}
 };
 
-// ✅ Element-specific pre-edge or XANES zoom ranges
+// ✅ Element-specific pre-edge XANES zoom ranges
 const preedgeRanges = {
   "As": [11860, 11885],
   "Fe": [7110, 7120],
   "S":  [2465, 2480],
-  "Pb": [13020, 13055]
+  "Pb": [13020, 13040]
+};
+
+// ✅ Element-specific normalized XANES ranges
+const xanesRanges = {
+  "As": [11850, 11930],
+  "Fe": [7100, 7180],
+  "S":  [2460, 2510],
+  "Pb": [13000, 13100]
+};
+
+// ✅ Element-specific EXAFS k-space ranges
+const exafsRanges = {
+  "As": [2, 13],
+  "Fe": [2, 13],
+  "S":  [1, 10],
+  "Pb": [2, 12]
 };
 
 // ✅ Minimal periodic table layout used for selecting supported elements
@@ -244,12 +266,54 @@ function getNorm(record) {
   return record.norm ?? record.normalized_mu ?? record.normalizedMu ?? record.mu_norm ?? record.y;
 }
 
+
 function getR(record) {
   return record.r ?? record.R ?? record.R_A ?? record.x;
 }
 
 function getFTMagnitude(record) {
   return record.chir_mag ?? record.ft_magnitude ?? record.magnitude ?? record.y;
+}
+
+// ✅ Read k values from possible JSON schemas
+function getK(record) {
+  return Number(
+    record.k ??
+    record.k_Ainv ??
+    record.wavenumber ??
+    record.x
+  );
+}
+
+// ✅ Read unweighted χ(k)
+function getChi(record) {
+  return Number(
+    record.chi ??
+    record.chi_k ??
+    record.y
+  );
+}
+
+// ✅ Read k²χ(k), or calculate it when only χ(k) is present
+function getK2Chi(record) {
+  const kValue = getK(record);
+
+  const storedK2Chi =
+    record.k2chi ??
+    record.k2_chi ??
+    record.k2_chi_k;
+
+  if (storedK2Chi !== undefined && storedK2Chi !== null) {
+    return Number(storedK2Chi);
+  }
+
+  const chiValue = getChi(record);
+
+  if (Number.isFinite(kValue) && Number.isFinite(chiValue)) {
+    return Math.pow(kValue, 2) * chiValue;
+  }
+
+  return NaN;
 }
 
 function getSampleLabel(sample) {
@@ -306,9 +370,19 @@ async function loadSampleData(sample) {
     if (sample.preedge_file) {
       preedgeCache[sampleId] = await fetchJson(sample.preedge_file);
     } else {
-      // ✅ Fallback: use XANES file if a separate pre-edge file is unavailable
       preedgeCache[sampleId] = xanesCache[sampleId];
     }
+  }
+
+  // ✅ Load EXAFS χ(k)
+  if (!chiCache[sampleId]) {
+    if (!sample.chi_file) {
+      throw new Error(
+        "chi_file is missing from database_index.json for " + sampleId
+      );
+    }
+
+    chiCache[sampleId] = await fetchJson(sample.chi_file);
   }
 
   if (!ftCache[sampleId]) {
@@ -567,7 +641,11 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
 function plotAdvisorXanes(rows, selectedSampleId) {
   const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
   const selectedPoints = xanesCache[selectedSampleId] || [];
-  const selectedRange = getEnergyRange(selectedPoints);
+  // ✅ Select the normalized XANES x-axis range from the element
+  const selectedRange =
+    xanesRanges[selectedSample.element] ||
+    getEnergyRange(selectedPoints);
+  
   const whiteLine = getWhiteLine(selectedPoints);
 
   const traces = rows.map(function(row, index) {
@@ -608,6 +686,106 @@ function plotAdvisorXanes(rows, selectedSampleId) {
     margin: {t:60, r:25, b:55, l:65}
   }, {responsive:true});
 }
+
+
+// ✅ EXAFS χ(k) in k-space
+function plotAdvisorExafs(rows, selectedSampleId) {
+  const selectedSample = databaseIndex.find(
+    row => row.sample_id === selectedSampleId
+  );
+
+  if (!selectedSample) {
+    console.error("Selected sample not found:", selectedSampleId);
+    return;
+  }
+
+  // ✅ Use an element-specific display range
+  const selectedRange =
+    exafsRanges[selectedSample.element] || [2, 13];
+
+  const traces = rows.map(function(row, index) {
+    const points = chiCache[row.sample_id] || [];
+    const offset = index * 4.0;
+    const isSelected = row.sample_id === selectedSampleId;
+
+    const lineColor = isSelected
+      ? (elementInfo[row.element]?.dark_color || "#111111")
+      : "#111111";
+
+    return {
+      x: points.map(getK),
+      y: points.map(function(point) {
+        return getK2Chi(point) + offset;
+      }),
+      type: "scatter",
+      mode: "lines",
+      name: row.sample_id,
+      line: {
+        color: lineColor,
+        width: isSelected ? 3.5 : 2
+      },
+      opacity: isSelected ? 1.0 : 0.55,
+      customdata: points.map(function(point) {
+        return [
+          getChi(point),
+          getK2Chi(point)
+        ];
+      }),
+      hovertemplate:
+        "k: %{x:.2f} Å⁻¹" +
+        "<br>χ(k): %{customdata[0]:.4f}" +
+        "<br>k²χ(k): %{customdata[1]:.4f}" +
+        "<extra>" + getSampleLabel(row) + "</extra>"
+    };
+  });
+
+  const annotations = rows.map(function(row, index) {
+    return {
+      x: selectedRange[1],
+      y: index * 4.0,
+      text: getSampleLabel(row),
+      showarrow: false,
+      xanchor: "right",
+      yanchor: "bottom",
+      font: {size: 12}
+    };
+  });
+
+  Plotly.newPlot(
+    "exafsPlot",
+    traces,
+    {
+      title: selectedSample.element + " EXAFS",
+      xaxis: {
+        title: "k (Å⁻¹)",
+        range: selectedRange,
+        showline: true,
+        mirror: true,
+        ticks: "outside"
+      },
+      yaxis: {
+        title: "k²χ(k) + vertical offset",
+        showticklabels: false,
+        showline: true,
+        mirror: true,
+        ticks: "outside",
+        zeroline: false
+      },
+      annotations: annotations,
+      showlegend: false,
+      margin: {
+        t: 60,
+        r: 25,
+        b: 55,
+        l: 70
+      }
+    },
+    {
+      responsive: true
+    }
+  );
+}
+
 
 // ✅ FT-EXAFS magnitude
 function plotAdvisorFT(rows, selectedSampleId) {
@@ -678,7 +856,8 @@ async function updateSelectedSampleViews() {
 
     plotAdvisorPreedge(rows, selectedSampleId);
     plotAdvisorXanes(rows, selectedSampleId);
-    plotAdvisorFT(rows, selectedSampleId);
+    plotAdvisorExafs(rows, selectedSampleId);
+    plotAdvisorFT(rows, selectedSampleId);    
     buildMetadataTable(selectedSampleId);
     updateDownloadButton(selectedSample);
   } catch (error) {
