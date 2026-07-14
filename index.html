@@ -161,6 +161,14 @@ const elementInfo = {
   "Pb": {"name":"Lead", "edge":"L3-edge", "color":"#7F7F7F", "dark_color":"#404040", "text_color":"white"}
 };
 
+// ✅ Element-specific pre-edge or XANES zoom ranges
+const preedgeRanges = {
+  "As": [11860, 11885],
+  "Fe": [7110, 7120],
+  "S":  [2465, 2480],
+  "Pb": [13020, 13055]
+};
+
 // ✅ Minimal periodic table layout used for selecting supported elements
 const periodicElements = [
   {symbol:"H", number:1, name:"Hydrogen", col:1, row:1}, {symbol:"He", number:2, name:"Helium", col:18, row:1},
@@ -432,7 +440,7 @@ function populateSampleDropdown(rows) {
   rows.forEach(function(row) {
     const option = document.createElement("option");
     option.value = row.sample_id;
-    option.textContent = row.sample_id + " | " + row.element + " | " + getSampleLabel(row) + " | " + row.facility + " " + row.beamline;
+    option.textContent = row.sample_id + " | " + row.element + " | " + row.facility + " " + row.beamline;
     selector.appendChild(option);
   });
 }
@@ -512,7 +520,10 @@ function getWhiteLine(points) {
 function plotAdvisorPreedge(rows, selectedSampleId) {
   const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
   const selectedPoints = preedgeCache[selectedSampleId] || [];
-  const selectedRange = getEnergyRange(selectedPoints);
+  // ✅ Use the configured element-specific range
+  const selectedRange =
+    preedgeRanges[selectedSample.element] ||
+    getEnergyRange(selectedPoints);
   const labels = advisorPeakLabels(selectedSample.element);
 
   const traces = rows.map(function(row, index) {
@@ -590,7 +601,7 @@ function plotAdvisorXanes(rows, selectedSampleId) {
   Plotly.newPlot("xanesPlot", traces, {
     title: selectedSample.element + " normalized XANES",
     xaxis: {title: "Energy (eV)", range:selectedRange, showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Normalized μ(E) + vertical offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: "Normalized μ(E)", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     shapes: shapes,
     annotations: annotations,
     showlegend:false,
@@ -628,7 +639,7 @@ function plotAdvisorFT(rows, selectedSampleId) {
   Plotly.newPlot("ftPlot", traces, {
     title: selectedSample.element + " EXAFS FT",
     xaxis: {title: "R + Δ (Å)", range:[0, 6], showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Fourier transform magnitude + vertical offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: "Fourier transform magnitude", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     annotations: annotations,
     showlegend:false,
     margin: {t:60, r:25, b:55, l:70}
