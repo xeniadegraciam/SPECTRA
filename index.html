@@ -493,7 +493,7 @@ function buildFeatureTable(containerId, rows) {
     return;
   }
 
-  const columns = ["element", "sample_id", "athena_group", "phase", "species", "facility", "beamline", "edge", "qc_status"];
+  const columns = ["element", "sample_id", "species", "facility", "beamline", "edge", "qc_status"];
   let html = "<table><thead><tr>" + columns.map(column => "<th>" + column + "</th>").join("") + "</tr></thead><tbody>";
 
   rows.forEach(function(row) {
@@ -514,7 +514,7 @@ function populateSampleDropdown(rows) {
   rows.forEach(function(row) {
     const option = document.createElement("option");
     option.value = row.sample_id;
-    option.textContent = row.sample_id + " | " + row.element + " | " + row.facility + " " + row.beamline;
+    option.textContent = row.element + " | " + row.sample_id + " | " + row.facility + " | " + row.beamline;
     selector.appendChild(option);
   });
 }
