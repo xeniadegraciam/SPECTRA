@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>XAS and EXAFS Dashboard</title>
+<title>Advisor-style XAS and EXAFS Dashboard</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
 body { margin:0; font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; color:#222; }
@@ -59,7 +59,7 @@ tr:hover { background:#f9fafb; }
 </head>
 <body>
 <header>
-<h1>XAS and EXAFS reference dashboard</h1>
+<h1>Advisor-style XAS and EXAFS reference dashboard</h1>
 <p>The selected reference is shown as three stacked panels: pre-edge or XANES zoom, normalized XANES edge, and FT-EXAFS magnitude. Data are loaded from external JSON files generated from Athena/Larch outputs.</p>
 </header>
 
@@ -133,25 +133,25 @@ tr:hover { background:#f9fafb; }
 </section>
 </main>
 
-<script>
-// ✅ Root folder beside this index.html file
-// ✅ The dashboard first tries dashboard_export/database_index.json.
-// ✅ If that fails, it tries database_index.json for local debugging when the index was copied beside the HTML.
-const DATA_ROOT = "dashboard_export/";
 
+<script>
+// ✅ Candidate folders for database_index.json
+const DATA_ROOT_CANDIDATES = ["dashboard_export/", ""];
 
 // ✅ Global dashboard state
+let dataRoot = "dashboard_export/";
 let databaseIndex = [];
 let selectedMode = "element";
 let selectedElement = "As";
 let selectedFacility = "";
 let selectedBeamline = "";
 
-// ✅ Cache files after first load to reduce repeated GitHub requests
+// ✅ Caches reduce repeated network requests
 const xanesCache = {};
 const preedgeCache = {};
 const ftCache = {};
 const metadataCache = {};
+const sampleLoadErrors = {};
 
 // ✅ Element display metadata
 const elementInfo = {
@@ -161,7 +161,7 @@ const elementInfo = {
   "Pb": {"name":"Lead", "edge":"L3-edge", "color":"#7F7F7F", "dark_color":"#404040", "text_color":"white"}
 };
 
-// ✅ Minimal periodic table layout used for selecting supported elements
+// ✅ Minimal periodic-table layout
 const periodicElements = [
   {symbol:"H", number:1, name:"Hydrogen", col:1, row:1}, {symbol:"He", number:2, name:"Helium", col:18, row:1},
   {symbol:"Li", number:3, name:"Lithium", col:1, row:2}, {symbol:"Be", number:4, name:"Beryllium", col:2, row:2},
@@ -179,46 +179,29 @@ const periodicElements = [
   {symbol:"Ba", number:56, name:"Barium", col:2, row:6}, {symbol:"Pb", number:82, name:"Lead", col:14, row:6}
 ];
 
-// ✅ Utility helpers
+// ✅ General helpers
 function uniqueValues(values) {
   return [...new Set(values.filter(value => value !== undefined && value !== null && value !== ""))];
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function normalizePath(relativePath) {
-  return String(relativePath || "").replace(/\\/g, "/").replace(/^dashboard_export\//, "");
+  return String(relativePath || "")
+    .replace(/\\/g, "/")
+    .replace(/^\.?\//, "")
+    .replace(/^dashboard_export\//, "");
 }
 
 function dataUrl(relativePath) {
-  return DATA_ROOT + normalizePath(relativePath);
-}
-
-async function fetchJsonFromUrl(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("Could not load " + url + " | HTTP " + response.status);
-  }
-  return await response.json();
-}
-
-async function fetchJson(relativePath) {
-  return await fetchJsonFromUrl(dataUrl(relativePath));
-}
-
-async function fetchDatabaseIndex() {
-  const attemptedUrls = [
-    "dashboard_export/database_index.json",
-    "database_index.json"
-  ];
-
-  for (const url of attemptedUrls) {
-    try {
-      return await fetchJsonFromUrl(url);
-    } catch (error) {
-      console.warn("Database index attempt failed:", url, error.message);
-    }
-  }
-
-  throw new Error("Could not load database_index.json. Tried dashboard_export/database_index.json and database_index.json.");
+  return dataRoot + normalizePath(relativePath);
 }
 
 function setStatus(message, isError=false) {
@@ -227,29 +210,42 @@ function setStatus(message, isError=false) {
   box.innerHTML = message;
 }
 
-// ✅ Robust property getters for different possible JSON schemas
+async function fetchJsonFromUrl(url) {
+  const response = await fetch(url, {cache: "no-store"});
+  if (!response.ok) {
+    throw new Error("HTTP " + response.status + " for " + url);
+  }
+
+  try {
+    return await response.json();
+  } catch (error) {
+    throw new Error("Invalid JSON in " + url + ": " + error.message);
+  }
+}
+
+async function fetchJson(relativePath) {
+  return await fetchJsonFromUrl(dataUrl(relativePath));
+}
+
+// ✅ Robust schema getters
 function getX(record) {
-  return record.energy ?? record.energy_eV ?? record.Energy ?? record.x;
+  return Number(record.energy ?? record.energy_eV ?? record.Energy ?? record.x);
 }
 
 function getNorm(record) {
-  return record.norm ?? record.normalized_mu ?? record.normalizedMu ?? record.mu_norm ?? record.y;
+  return Number(record.norm ?? record.normalized_mu ?? record.normalizedMu ?? record.mu_norm ?? record.y);
 }
 
 function getR(record) {
-  return record.r ?? record.R ?? record.R_A ?? record.x;
+  return Number(record.r ?? record.R ?? record.R_A ?? record.x);
 }
 
 function getFTMagnitude(record) {
-  return record.chir_mag ?? record.ft_magnitude ?? record.magnitude ?? record.y;
+  return Number(record.chir_mag ?? record.ft_magnitude ?? record.magnitude ?? record.y);
 }
 
 function getSampleLabel(sample) {
-  return sample.phase || sample.athena_group || sample.sample_id;
-}
-
-function getSpecies(sample) {
-  return sample.species || sample.assigned_species || "";
+  return sample.phase || sample.athena_group || sample.sample_id || "Unnamed sample";
 }
 
 function getQc(sample) {
@@ -257,78 +253,161 @@ function getQc(sample) {
 }
 
 function getElementSamples() {
-  return uniqueValues(databaseIndex.map(row => row.element)).filter(el => elementInfo[el]);
+  return uniqueValues(databaseIndex.map(row => row.element)).filter(element => elementInfo[element]);
 }
 
-// ✅ Load index
+// ✅ Locate database_index.json automatically
 async function loadDatabaseIndex() {
-  databaseIndex = await fetchDatabaseIndex();
+  const failures = [];
 
-  // ✅ Make sure required display fields exist, even if absent from the script output
-  databaseIndex = databaseIndex.map(row => ({
-    ...row,
-    element: row.element || "Unknown",
-    phase: row.phase || row.athena_group || row.sample_id,
-    species: row.species || row.assigned_species || "",
-    facility: row.facility || "Unknown facility",
-    beamline: row.beamline || "Unknown beamline"
-  }));
+  for (const candidateRoot of DATA_ROOT_CANDIDATES) {
+    const indexUrl = candidateRoot + "database_index.json";
 
-  const availableElements = getElementSamples();
-  if (availableElements.length > 0) {
-    selectedElement = availableElements.includes("As") ? "As" : availableElements[0];
+    try {
+      const loadedIndex = await fetchJsonFromUrl(indexUrl);
+
+      if (!Array.isArray(loadedIndex)) {
+        throw new Error("The database index must be a JSON array.");
+      }
+
+      dataRoot = candidateRoot;
+      databaseIndex = loadedIndex.map(row => ({
+        ...row,
+        sample_id: row.sample_id || row.athena_group,
+        element: row.element || "Unknown",
+        phase: row.phase || row.athena_group || row.sample_id || "Unnamed reference",
+        species: row.species || row.assigned_species || "",
+        facility: row.facility || "Unknown facility",
+        beamline: row.beamline || "Unknown beamline"
+      }));
+
+      databaseIndex = databaseIndex.filter(row => row.sample_id);
+
+      if (databaseIndex.length === 0) {
+        throw new Error("The database index contains no valid sample_id values.");
+      }
+
+      const availableElements = getElementSamples();
+      selectedElement = availableElements.includes("As") ? "As" : (availableElements[0] || "As");
+
+      const facilities = uniqueValues(databaseIndex.map(row => row.facility)).sort();
+      selectedFacility = facilities[0] || "Unknown facility";
+
+      const beamlines = uniqueValues(
+        databaseIndex
+          .filter(row => row.facility === selectedFacility)
+          .map(row => row.beamline)
+      ).sort();
+      selectedBeamline = beamlines[0] || "Unknown beamline";
+
+      return;
+    } catch (error) {
+      failures.push(indexUrl + ": " + error.message);
+    }
   }
 
-  const facilities = uniqueValues(databaseIndex.map(row => row.facility)).sort();
-  selectedFacility = facilities[0] || "Unknown facility";
-
-  const beamlines = uniqueValues(databaseIndex.filter(row => row.facility === selectedFacility).map(row => row.beamline)).sort();
-  selectedBeamline = beamlines[0] || "Unknown beamline";
+  throw new Error("Could not load database_index.json. " + failures.join(" | "));
 }
 
-// ✅ Load one sample's processed files
+// ✅ Validate and load one sample
 async function loadSampleData(sample) {
   const sampleId = sample.sample_id;
+  const errors = [];
 
   if (!xanesCache[sampleId]) {
-    xanesCache[sampleId] = await fetchJson(sample.xanes_file);
+    if (!sample.xanes_file) {
+      errors.push("xanes_file missing from database index");
+    } else {
+      try {
+        const data = await fetchJson(sample.xanes_file);
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error("XANES JSON is empty or is not an array");
+        }
+        xanesCache[sampleId] = data;
+      } catch (error) {
+        errors.push("XANES: " + error.message);
+      }
+    }
   }
 
   if (!preedgeCache[sampleId]) {
     if (sample.preedge_file) {
-      preedgeCache[sampleId] = await fetchJson(sample.preedge_file);
-    } else {
-      // ✅ Fallback: use XANES file if a separate pre-edge file is unavailable
+      try {
+        const data = await fetchJson(sample.preedge_file);
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error("pre-edge JSON is empty or is not an array");
+        }
+        preedgeCache[sampleId] = data;
+      } catch (error) {
+        errors.push("pre-edge: " + error.message);
+      }
+    }
+
+    // ✅ Fallback to normalized XANES when no separate pre-edge file exists
+    if (!preedgeCache[sampleId] && xanesCache[sampleId]) {
       preedgeCache[sampleId] = xanesCache[sampleId];
     }
   }
 
   if (!ftCache[sampleId]) {
-    ftCache[sampleId] = await fetchJson(sample.ft_file);
+    if (!sample.ft_file) {
+      errors.push("ft_file missing from database index");
+    } else {
+      try {
+        const data = await fetchJson(sample.ft_file);
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error("FT-EXAFS JSON is empty or is not an array");
+        }
+        ftCache[sampleId] = data;
+      } catch (error) {
+        errors.push("FT-EXAFS: " + error.message);
+      }
+    }
   }
 
   if (!metadataCache[sampleId]) {
-    metadataCache[sampleId] = await fetchJson(sample.metadata_file);
+    if (!sample.metadata_file) {
+      errors.push("metadata_file missing from database index");
+      metadataCache[sampleId] = {rows: []};
+    } else {
+      try {
+        const data = await fetchJson(sample.metadata_file);
+        metadataCache[sampleId] = data || {rows: []};
+      } catch (error) {
+        errors.push("metadata: " + error.message);
+        metadataCache[sampleId] = {rows: []};
+      }
+    }
   }
+
+  sampleLoadErrors[sampleId] = errors;
+
+  return {
+    sample,
+    usableForXanes: Boolean(xanesCache[sampleId]),
+    usableForPreedge: Boolean(preedgeCache[sampleId]),
+    usableForFt: Boolean(ftCache[sampleId]),
+    errors
+  };
 }
 
-// ✅ Mode switching
+// ✅ Navigation mode
 function switchMode(mode) {
   selectedMode = mode;
   document.getElementById("elementModeButton").classList.toggle("active", mode === "element");
   document.getElementById("beamlineModeButton").classList.toggle("active", mode === "beamline");
   document.getElementById("elementSelectorSection").classList.toggle("hidden", mode !== "element");
   document.getElementById("beamlineSelectorSection").classList.toggle("hidden", mode !== "beamline");
-  updateDashboard();
+  void updateDashboard();
 }
 
-// ✅ Build periodic-table selector
+// ✅ Periodic table
 function buildPeriodicTable() {
   const table = document.getElementById("periodicTable");
   table.innerHTML = "";
   const availableElements = getElementSamples();
 
-  periodicElements.forEach(function(el) {
+  periodicElements.forEach(el => {
     const cell = document.createElement("div");
     cell.className = "element-cell";
     cell.style.gridColumn = el.col;
@@ -337,13 +416,13 @@ function buildPeriodicTable() {
     if (availableElements.includes(el.symbol)) {
       cell.classList.add("active");
       cell.style.borderColor = elementInfo[el.symbol].dark_color;
-      cell.onclick = function() {
+      cell.onclick = () => {
         selectedElement = el.symbol;
-        updateDashboard();
+        void updateDashboard();
       };
     }
 
-    if (el.symbol === selectedElement) {
+    if (el.symbol === selectedElement && elementInfo[el.symbol]) {
       const selectedInfo = elementInfo[el.symbol];
       cell.classList.add("selected");
       cell.style.backgroundColor = selectedInfo.color;
@@ -352,331 +431,406 @@ function buildPeriodicTable() {
       cell.style.boxShadow = "0 0 12px rgba(0,0,0,0.25), 0 0 20px " + selectedInfo.color;
     }
 
-    cell.innerHTML = "<div class='atomic-number'>" + el.number + "</div><div class='symbol'>" + el.symbol + "</div><div class='element-name'>" + el.name + "</div>";
+    cell.innerHTML =
+      "<div class='atomic-number'>" + escapeHtml(el.number) + "</div>" +
+      "<div class='symbol'>" + escapeHtml(el.symbol) + "</div>" +
+      "<div class='element-name'>" + escapeHtml(el.name) + "</div>";
+
     table.appendChild(cell);
   });
 }
 
-// ✅ Build facility and beamline selector
+// ✅ Facility and beamline buttons
 function buildFacilityButtons() {
   const facilities = uniqueValues(databaseIndex.map(row => row.facility)).sort();
-  const facilityContainer = document.getElementById("facilityButtons");
-  facilityContainer.innerHTML = "";
+  const container = document.getElementById("facilityButtons");
+  container.innerHTML = "";
 
-  facilities.forEach(function(facility) {
+  facilities.forEach(facility => {
     const button = document.createElement("button");
     button.className = "facility-button";
-    if (facility === selectedFacility) button.classList.add("active");
+    button.classList.toggle("active", facility === selectedFacility);
     button.textContent = facility;
-    button.onclick = function() {
+
+    button.onclick = () => {
       selectedFacility = facility;
-      const beamlines = uniqueValues(databaseIndex.filter(row => row.facility === selectedFacility).map(row => row.beamline)).sort();
+      const beamlines = uniqueValues(
+        databaseIndex
+          .filter(row => row.facility === selectedFacility)
+          .map(row => row.beamline)
+      ).sort();
       selectedBeamline = beamlines[0] || "Unknown beamline";
-      updateDashboard();
+      void updateDashboard();
     };
-    facilityContainer.appendChild(button);
+
+    container.appendChild(button);
   });
 }
 
 function buildBeamlineButtons() {
-  const beamlines = uniqueValues(databaseIndex.filter(row => row.facility === selectedFacility).map(row => row.beamline)).sort();
-  const beamlineContainer = document.getElementById("beamlineButtons");
-  beamlineContainer.innerHTML = "";
+  const beamlines = uniqueValues(
+    databaseIndex
+      .filter(row => row.facility === selectedFacility)
+      .map(row => row.beamline)
+  ).sort();
 
-  beamlines.forEach(function(beamline) {
+  const container = document.getElementById("beamlineButtons");
+  container.innerHTML = "";
+
+  beamlines.forEach(beamline => {
     const button = document.createElement("button");
     button.className = "beamline-button";
-    if (beamline === selectedBeamline) button.classList.add("active");
+    button.classList.toggle("active", beamline === selectedBeamline);
     button.textContent = beamline;
-    button.onclick = function() {
+
+    button.onclick = () => {
       selectedBeamline = beamline;
-      updateDashboard();
+      void updateDashboard();
     };
-    beamlineContainer.appendChild(button);
+
+    container.appendChild(button);
   });
 }
 
-// ✅ Current filtered references
 function getCurrentRows() {
   if (selectedMode === "element") {
     return databaseIndex.filter(row => row.element === selectedElement);
   }
-  return databaseIndex.filter(row => row.facility === selectedFacility && row.beamline === selectedBeamline);
+
+  return databaseIndex.filter(
+    row => row.facility === selectedFacility && row.beamline === selectedBeamline
+  );
 }
 
-// ✅ Feature table
+// ✅ Tables
 function buildFeatureTable(containerId, rows) {
   if (!rows.length) {
     document.getElementById(containerId).innerHTML = "<p>No data available.</p>";
     return;
   }
 
-  const columns = ["element", "sample_id", "athena_group", "phase", "species", "facility", "beamline", "edge", "qc_status"];
-  let html = "<table><thead><tr>" + columns.map(column => "<th>" + column + "</th>").join("") + "</tr></thead><tbody>";
+  const columns = [
+    "element", "sample_id", "athena_group", "phase", "species",
+    "facility", "beamline", "edge", "qc_status"
+  ];
 
-  rows.forEach(function(row) {
-    html += "<tr>" + columns.map(function(column) {
-      return "<td>" + (row[column] ?? "") + "</td>";
-    }).join("") + "</tr>";
+  let html = "<table><thead><tr>";
+  html += columns.map(column => "<th>" + escapeHtml(column) + "</th>").join("");
+  html += "<th>Load status</th></tr></thead><tbody>";
+
+  rows.forEach(row => {
+    html += "<tr>";
+    html += columns.map(column => "<td>" + escapeHtml(row[column] ?? "") + "</td>").join("");
+
+    const errors = sampleLoadErrors[row.sample_id] || [];
+    html += "<td>" + escapeHtml(errors.length ? errors.join("; ") : "Not checked") + "</td>";
+    html += "</tr>";
   });
 
   html += "</tbody></table>";
   document.getElementById(containerId).innerHTML = html;
 }
 
-// ✅ Dropdown
 function populateSampleDropdown(rows) {
   const selector = document.getElementById("sampleSelect");
+  const previousValue = selector.value;
   selector.innerHTML = "";
 
-  rows.forEach(function(row) {
+  rows.forEach(row => {
     const option = document.createElement("option");
     option.value = row.sample_id;
-    option.textContent = row.sample_id + " | " + row.element + " | " + getSampleLabel(row) + " | " + row.facility + " " + row.beamline;
+    option.textContent =
+      row.sample_id + " | " + row.element + " | " + getSampleLabel(row) +
+      " | " + row.facility + " " + row.beamline;
     selector.appendChild(option);
   });
+
+  if (rows.some(row => row.sample_id === previousValue)) {
+    selector.value = previousValue;
+  }
 }
 
-// ✅ Metadata table
 function buildMetadataTable(selectedSampleId) {
-  const metadataRecord = metadataCache[selectedSampleId];
+  const metadataRecord = metadataCache[selectedSampleId] || {rows: []};
   const sample = databaseIndex.find(row => row.sample_id === selectedSampleId);
-  const info = elementInfo[sample.element] || {"color":"#111827", "dark_color":"#111827", "text_color":"white"};
 
-  document.getElementById("selectedMetadataTitle").textContent = "Metadata recovered for " + selectedSampleId;
+  if (!sample) {
+    document.getElementById("selectedMetadataTable").innerHTML =
+      "<p>Selected sample was not found in database_index.json.</p>";
+    return;
+  }
+
+  const info = elementInfo[sample.element] || {
+    color:"#111827", dark_color:"#111827", text_color:"white"
+  };
+
+  document.getElementById("selectedMetadataTitle").textContent =
+    "Metadata recovered for " + selectedSampleId;
 
   const badge = document.getElementById("selectedMetadataBadge");
-  badge.textContent = sample.facility + " | " + sample.beamline + " | " + getSampleLabel(sample);
+  badge.textContent =
+    sample.facility + " | " + sample.beamline + " | " + getSampleLabel(sample);
   badge.style.backgroundColor = info.color;
   badge.style.color = info.text_color;
   badge.style.border = "1px solid " + info.dark_color;
 
-  const rows = metadataRecord.rows || [];
-  let html = "<table><thead><tr><th>Publication metadata field</th><th>Extracted value from selected reference</th><th>Publication note</th></tr></thead><tbody>";
+  const rows = Array.isArray(metadataRecord.rows) ? metadataRecord.rows : [];
+  const errors = sampleLoadErrors[selectedSampleId] || [];
 
-  rows.forEach(function(row) {
-    html += "<tr><td>" + (row.field ?? "") + "</td><td>" + (row.value ?? "") + "</td><td>" + (row.note ?? "") + "</td></tr>";
+  if (rows.length === 0) {
+    document.getElementById("selectedMetadataTable").innerHTML =
+      "<p>No metadata rows were available for this reference.</p>" +
+      (errors.length ? "<p><strong>Load diagnostics:</strong> " + escapeHtml(errors.join("; ")) + "</p>" : "");
+    return;
+  }
+
+  let html =
+    "<table><thead><tr>" +
+    "<th>Publication metadata field</th>" +
+    "<th>Extracted value from selected reference</th>" +
+    "<th>Publication note</th>" +
+    "</tr></thead><tbody>";
+
+  rows.forEach(row => {
+    html +=
+      "<tr><td>" + escapeHtml(row.field ?? "") + "</td>" +
+      "<td>" + escapeHtml(row.value ?? "") + "</td>" +
+      "<td>" + escapeHtml(row.note ?? "") + "</td></tr>";
   });
 
   html += "</tbody></table>";
   document.getElementById("selectedMetadataTable").innerHTML = html;
 }
 
-// ✅ Download raw or project file
+// ✅ Download button only uses web-accessible relative paths
 function updateDownloadButton(sample) {
   const button = document.getElementById("downloadButton");
+  const downloadablePath =
+    sample.raw_file ||
+    sample.download_file ||
+    sample.xanes_file ||
+    sample.ft_file ||
+    sample.metadata_file;
 
-  if (sample.raw_file) {
-    button.href = dataUrl(sample.raw_file);
-    button.download = sample.raw_file.split("/").pop();
-    button.textContent = "Download raw file";
+  if (downloadablePath) {
+    button.href = dataUrl(downloadablePath);
+    button.download = normalizePath(downloadablePath).split("/").pop();
+    button.textContent = sample.raw_file ? "Download raw file" : "Download available sample file";
+    button.style.pointerEvents = "auto";
+    button.style.opacity = "1";
   } else {
-    // ⚠️ Windows absolute paths from project_file cannot be downloaded from GitHub Pages.
     button.href = "#";
     button.removeAttribute("download");
-    button.textContent = "Raw file not linked in database_index.json";
+    button.textContent = "No downloadable file listed";
+    button.style.pointerEvents = "none";
+    button.style.opacity = "0.6";
   }
 }
 
-// ✅ Plot helpers
+// ✅ Plot utilities
 function getStackOffset(index) {
   return index * 1.55;
 }
 
-function advisorPeakLabels(element) {
-  if (element === "Fe") return ["1s→3d", "Fe-O", "Fe-Fe"];
-  if (element === "As") return ["As(V)O₄", "As-Fe", "As-S/Fe"];
-  if (element === "Pb") return ["Pb L₃ edge", "Pb-O/S", "Pb-Fe"];
-  if (element === "S") return ["S reduced", "S sulfate", "S-O"];
-  return ["edge", "shell 1", "shell 2"];
+function validPairs(points, xGetter, yGetter) {
+  return points
+    .map(point => ({x: xGetter(point), y: yGetter(point)}))
+    .filter(point => Number.isFinite(point.x) && Number.isFinite(point.y));
 }
 
-function getEnergyRange(points) {
-  const x = points.map(getX).filter(value => Number.isFinite(value));
-  return [Math.min(...x), Math.max(...x)];
+function getFiniteRange(values, fallback=[0, 1]) {
+  const finite = values.filter(Number.isFinite);
+  if (finite.length === 0) return fallback;
+  const minimum = Math.min(...finite);
+  const maximum = Math.max(...finite);
+  return minimum === maximum ? [minimum - 0.5, maximum + 0.5] : [minimum, maximum];
 }
 
 function getWhiteLine(points) {
-  let best = null;
-  points.forEach(point => {
-    const x = getX(point);
-    const y = getNorm(point);
-    if (Number.isFinite(x) && Number.isFinite(y)) {
-      if (!best || y > best.y) best = {x, y};
-    }
-  });
-  return best || {x:null, y:null};
+  const pairs = validPairs(points, getX, getNorm);
+  if (!pairs.length) return {x:null, y:null};
+  return pairs.reduce((best, point) => point.y > best.y ? point : best);
 }
 
-// ✅ pre-edge / XANES zoom
+// ✅ Pre-edge / XANES zoom
 function plotAdvisorPreedge(rows, selectedSampleId) {
   const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
   const selectedPoints = preedgeCache[selectedSampleId] || [];
-  const selectedRange = getEnergyRange(selectedPoints);
-  const labels = advisorPeakLabels(selectedSample.element);
+  const selectedPairs = validPairs(selectedPoints, getX, getNorm);
+  const selectedRange = getFiniteRange(selectedPairs.map(point => point.x));
 
-  const traces = rows.map(function(row, index) {
-    const points = preedgeCache[row.sample_id] || [];
-    const offset = getStackOffset(index);
-    const isSelected = row.sample_id === selectedSampleId;
-    const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
+  const traces = rows
+    .filter(row => preedgeCache[row.sample_id])
+    .map((row, index) => {
+      const pairs = validPairs(preedgeCache[row.sample_id], getX, getNorm);
+      const offset = getStackOffset(index);
+      const isSelected = row.sample_id === selectedSampleId;
+      const color = isSelected
+        ? (elementInfo[row.element]?.dark_color || "#111111")
+        : "#111111";
 
-    return {
-      x: points.map(getX),
-      y: points.map(point => getNorm(point) + offset),
-      type: "scatter",
-      mode: "lines",
-      name: row.sample_id,
-      line: {color: color, width: isSelected ? 3.5 : 2},
-      opacity: isSelected ? 1.0 : 0.55,
-      hovertemplate: "Energy: %{x:.2f} eV<br>offset normalized μ(E): %{y:.3f}<extra>" + getSampleLabel(row) + "</extra>"
-    };
-  });
+      return {
+        x: pairs.map(point => point.x),
+        y: pairs.map(point => point.y + offset),
+        type: "scatter",
+        mode: "lines",
+        name: row.sample_id,
+        line: {color, width: isSelected ? 3.5 : 2},
+        opacity: isSelected ? 1.0 : 0.55,
+        hovertemplate:
+          "Energy: %{x:.2f} eV<br>offset normalized μ(E): %{y:.3f}<extra>" +
+          escapeHtml(getSampleLabel(row)) + "</extra>"
+      };
+    });
 
-  const annotations = rows.map(function(row, index) {
-    return {x:selectedRange[1], y:getStackOffset(index) + 1.0, text:getSampleLabel(row), showarrow:false, xanchor:"right", font:{size:12}};
-  });
-
-  const whiteLine = getWhiteLine(selectedPoints);
-  if (whiteLine.x !== null) {
-    annotations.push({x:whiteLine.x, y:getStackOffset(rows.length - 1) + 1.45, text:labels[0], showarrow:true, arrowhead:2, ax:-35, ay:-25, font:{size:13}});
-  }
-
-  Plotly.newPlot("preedgePlot", traces, {
-    title: selectedSample.element + " pre-edge / XANES zoom",
+  Plotly.react("preedgePlot", traces, {
+    title: (selectedSample?.element || "") + " pre-edge / XANES zoom",
     xaxis: {title: "Energy (eV)", range:selectedRange, showline:true, mirror:true, ticks:"outside"},
     yaxis: {title: "Normalized μ(E) + vertical offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     showlegend:false,
-    annotations: annotations,
     margin: {t:60, r:25, b:55, l:65}
   }, {responsive:true});
 }
 
-// ✅ normalized XANES full edge
+// ✅ Normalized XANES
 function plotAdvisorXanes(rows, selectedSampleId) {
   const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
   const selectedPoints = xanesCache[selectedSampleId] || [];
-  const selectedRange = getEnergyRange(selectedPoints);
+  const selectedPairs = validPairs(selectedPoints, getX, getNorm);
+  const selectedRange = getFiniteRange(selectedPairs.map(point => point.x));
   const whiteLine = getWhiteLine(selectedPoints);
 
-  const traces = rows.map(function(row, index) {
-    const points = xanesCache[row.sample_id] || [];
-    const offset = getStackOffset(index);
-    const isSelected = row.sample_id === selectedSampleId;
-    const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
+  const traces = rows
+    .filter(row => xanesCache[row.sample_id])
+    .map((row, index) => {
+      const pairs = validPairs(xanesCache[row.sample_id], getX, getNorm);
+      const offset = getStackOffset(index);
+      const isSelected = row.sample_id === selectedSampleId;
+      const color = isSelected
+        ? (elementInfo[row.element]?.dark_color || "#111111")
+        : "#111111";
 
-    return {
-      x: points.map(getX),
-      y: points.map(point => getNorm(point) + offset),
-      type: "scatter",
-      mode: "lines",
-      name: row.sample_id,
-      line: {color: color, width: isSelected ? 3.5 : 2},
-      opacity: isSelected ? 1.0 : 0.55,
-      hovertemplate: "Energy: %{x:.2f} eV<br>offset normalized μ(E): %{y:.3f}<extra>" + getSampleLabel(row) + "</extra>"
-    };
-  });
+      return {
+        x: pairs.map(point => point.x),
+        y: pairs.map(point => point.y + offset),
+        type: "scatter",
+        mode: "lines",
+        name: row.sample_id,
+        line: {color, width: isSelected ? 3.5 : 2},
+        opacity: isSelected ? 1.0 : 0.55,
+        hovertemplate:
+          "Energy: %{x:.2f} eV<br>offset normalized μ(E): %{y:.3f}<extra>" +
+          escapeHtml(getSampleLabel(row)) + "</extra>"
+      };
+    });
 
-  const annotations = rows.map(function(row, index) {
-    return {x:selectedRange[1], y:getStackOffset(index) + 1.0, text:getSampleLabel(row), showarrow:false, xanchor:"right", font:{size:12}};
-  });
+  const shapes = whiteLine.x === null ? [] : [{
+    type:"line",
+    x0:whiteLine.x,
+    x1:whiteLine.x,
+    y0:0,
+    y1:1,
+    yref:"paper",
+    line:{dash:"dash", width:1.3, color:"#999999"}
+  }];
 
-  const shapes = [];
-  if (whiteLine.x !== null) {
-    shapes.push({type:"line", x0:whiteLine.x, x1:whiteLine.x, y0:0, y1:1, yref:"paper", line:{dash:"dash", width:1.3, color:"#999999"}});
-    annotations.push({x:whiteLine.x, y:getStackOffset(rows.length - 1) + 1.45, text:"white line", showarrow:true, arrowhead:2, ax:35, ay:-25, font:{size:13}});
-  }
-
-  Plotly.newPlot("xanesPlot", traces, {
-    title: selectedSample.element + " normalized XANES",
+  Plotly.react("xanesPlot", traces, {
+    title: (selectedSample?.element || "") + " normalized XANES",
     xaxis: {title: "Energy (eV)", range:selectedRange, showline:true, mirror:true, ticks:"outside"},
     yaxis: {title: "Normalized μ(E) + vertical offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
-    shapes: shapes,
-    annotations: annotations,
+    shapes,
     showlegend:false,
     margin: {t:60, r:25, b:55, l:65}
   }, {responsive:true});
 }
 
-// ✅ FT-EXAFS magnitude
+// ✅ FT-EXAFS
 function plotAdvisorFT(rows, selectedSampleId) {
   const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
-  const labels = advisorPeakLabels(selectedSample.element);
 
-  const traces = rows.map(function(row, index) {
-    const points = ftCache[row.sample_id] || [];
-    const offset = getStackOffset(index);
-    const isSelected = row.sample_id === selectedSampleId;
-    const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
+  const traces = rows
+    .filter(row => ftCache[row.sample_id])
+    .map((row, index) => {
+      const pairs = validPairs(ftCache[row.sample_id], getR, getFTMagnitude);
+      const offset = getStackOffset(index);
+      const isSelected = row.sample_id === selectedSampleId;
+      const color = isSelected
+        ? (elementInfo[row.element]?.dark_color || "#111111")
+        : "#111111";
 
-    return {
-      x: points.map(getR),
-      y: points.map(point => getFTMagnitude(point) + offset),
-      type: "scatter",
-      mode: "lines",
-      name: row.sample_id,
-      line: {color: color, width: isSelected ? 3.5 : 2},
-      opacity: isSelected ? 1.0 : 0.55,
-      hovertemplate: "R + Δ: %{x:.2f} Å<br>offset FT magnitude: %{y:.3f}<extra>" + getSampleLabel(row) + "</extra>"
-    };
-  });
+      return {
+        x: pairs.map(point => point.x),
+        y: pairs.map(point => point.y + offset),
+        type: "scatter",
+        mode: "lines",
+        name: row.sample_id,
+        line: {color, width: isSelected ? 3.5 : 2},
+        opacity: isSelected ? 1.0 : 0.55,
+        hovertemplate:
+          "R: %{x:.2f} Å<br>offset FT magnitude: %{y:.3f}<extra>" +
+          escapeHtml(getSampleLabel(row)) + "</extra>"
+      };
+    });
 
-  const annotations = rows.map(function(row, index) {
-    return {x:5.85, y:getStackOffset(index) + 1.0, text:getSampleLabel(row), showarrow:false, xanchor:"right", font:{size:12}};
-  });
-
-  Plotly.newPlot("ftPlot", traces, {
-    title: selectedSample.element + " EXAFS FT",
-    xaxis: {title: "R + Δ (Å)", range:[0, 6], showline:true, mirror:true, ticks:"outside"},
+  Plotly.react("ftPlot", traces, {
+    title: (selectedSample?.element || "") + " EXAFS FT",
+    xaxis: {title: "R (Å)", range:[0, 6], showline:true, mirror:true, ticks:"outside"},
     yaxis: {title: "Fourier transform magnitude + vertical offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
-    annotations: annotations,
     showlegend:false,
     margin: {t:60, r:25, b:55, l:70}
   }, {responsive:true});
 }
 
-// ✅ Load all sample files needed for current comparison group
+// ✅ Load references without allowing one missing file to stop everything
 async function loadRowsForPlotting(rows) {
-  const results = await Promise.allSettled(rows.map(row => loadSampleData(row)));
-  const failed = results
-    .map((result, index) => ({result: result, row: rows[index]}))
-    .filter(item => item.result.status === "rejected");
+  const results = await Promise.all(rows.map(row => loadSampleData(row)));
+  return results;
+}
 
-  if (failed.length > 0) {
-    console.warn("Some sample files could not be loaded:", failed);
+async function updateSelectedSampleViews() {
+  const rows = getCurrentRows();
+  const selectedSampleId = document.getElementById("sampleSelect").value;
+
+  if (!selectedSampleId || rows.length === 0) return;
+
+  setStatus("Loading " + rows.length + " reference(s)...");
+
+  const results = await loadRowsForPlotting(rows);
+  const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
+
+  plotAdvisorPreedge(rows, selectedSampleId);
+  plotAdvisorXanes(rows, selectedSampleId);
+  plotAdvisorFT(rows, selectedSampleId);
+  buildMetadataTable(selectedSampleId);
+  updateDownloadButton(selectedSample);
+  buildFeatureTable("featureTable", rows);
+
+  const failedSamples = results.filter(result => result.errors.length > 0);
+  const fullyUsable = results.filter(
+    result => result.usableForXanes && result.usableForFt
+  );
+
+  if (fullyUsable.length === 0) {
     setStatus(
-      "Database loaded, but " + failed.length + " sample file set(s) could not be loaded. " +
-      "Check the browser Console/Network tab for the exact missing JSON file paths.",
+      "The database index loaded, but none of the selected references had both usable XANES and FT-EXAFS files. Check the browser console and the Load status column.",
       true
+    );
+  } else if (failedSamples.length > 0) {
+    setStatus(
+      "Loaded " + fullyUsable.length + " usable reference(s). " +
+      failedSamples.length + " reference(s) had missing or invalid files. " +
+      "See the Load status column and browser console."
+    );
+    console.warn("Sample load diagnostics:", sampleLoadErrors);
+  } else {
+    setStatus(
+      "Database loaded successfully from <code>" +
+      escapeHtml(dataRoot + "database_index.json") +
+      "</code>. " + fullyUsable.length + " reference(s) are ready."
     );
   }
 }
 
-// ✅ Update selected sample plots and metadata
-async function updateSelectedSampleViews() {
-  try {
-    const rows = getCurrentRows();
-    const selectedSampleId = document.getElementById("sampleSelect").value;
-
-    if (!selectedSampleId || rows.length === 0) {
-      return;
-    }
-
-    const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
-    await loadRowsForPlotting(rows);
-
-    plotAdvisorPreedge(rows, selectedSampleId);
-    plotAdvisorXanes(rows, selectedSampleId);
-    plotAdvisorFT(rows, selectedSampleId);
-    buildMetadataTable(selectedSampleId);
-    updateDownloadButton(selectedSample);
-  } catch (error) {
-    setStatus("Error loading selected sample: " + error.message, true);
-    console.error(error);
-  }
-}
-
-// ✅ Main dashboard refresh
 async function updateDashboard() {
   buildPeriodicTable();
   buildFacilityButtons();
@@ -686,18 +840,26 @@ async function updateDashboard() {
 
   if (rows.length === 0) {
     document.getElementById("totalSpectra").textContent = "0";
-    document.getElementById("featureTable").innerHTML = "<p>No references found for this filter.</p>";
+    document.getElementById("totalPhases").textContent = "0";
+    document.getElementById("featureTable").innerHTML =
+      "<p>No references found for this filter.</p>";
     return;
   }
 
+  const elementDisplay = elementInfo[selectedElement];
+
   const titleInfo = selectedMode === "element"
     ? {
-        heading: "<span class='element-badge' style='background-color:" + elementInfo[selectedElement].color + "; color:" + elementInfo[selectedElement].text_color + ";'>" + selectedElement + "</span>" + selectedElement + " spectroscopy analysis",
-        subheading: elementInfo[selectedElement].name + " | " + elementInfo[selectedElement].edge,
+        heading:
+          "<span class='element-badge' style='background-color:" +
+          elementDisplay.color + "; color:" + elementDisplay.text_color + ";'>" +
+          escapeHtml(selectedElement) + "</span>" +
+          escapeHtml(selectedElement) + " spectroscopy analysis",
+        subheading: elementDisplay.name + " | " + elementDisplay.edge,
         filter: selectedElement
       }
     : {
-        heading: selectedFacility + " beamline repository",
+        heading: escapeHtml(selectedFacility) + " beamline repository",
         subheading: selectedBeamline + " | references measured at this selected beamline",
         filter: selectedFacility + " / " + selectedBeamline
       };
@@ -705,40 +867,66 @@ async function updateDashboard() {
   document.getElementById("dashboardHeading").innerHTML = titleInfo.heading;
   document.getElementById("dashboardSubheading").textContent = titleInfo.subheading;
   document.getElementById("totalSpectra").textContent = rows.length;
-  document.getElementById("totalPhases").textContent = uniqueValues(rows.map(row => getSampleLabel(row))).length;
+  document.getElementById("totalPhases").textContent =
+    uniqueValues(rows.map(row => getSampleLabel(row))).length;
   document.getElementById("energyRange").textContent = titleInfo.filter;
-  document.getElementById("qcReview").textContent = rows.filter(row => getQc(row) !== "Pass").length;
+  document.getElementById("qcReview").textContent =
+    rows.filter(row => getQc(row) !== "Pass").length;
 
   populateSampleDropdown(rows);
   buildFeatureTable("featureTable", rows);
 
-  document.getElementById("interpretationTitle").textContent = selectedMode === "element" ? "Element-oriented reference library" : "Beamline-oriented reference library";
-  document.getElementById("interpretationText").textContent = selectedMode === "element"
-    ? "This view compares all references available for the selected element. Data are loaded from the processed JSON files listed in database_index.json."
-    : "This view compares all references measured at the selected facility and beamline. This is useful for beamline-specific campaigns and metadata review.";
+  document.getElementById("interpretationTitle").textContent =
+    selectedMode === "element"
+      ? "Element-oriented reference library"
+      : "Beamline-oriented reference library";
+
+  document.getElementById("interpretationText").textContent =
+    selectedMode === "element"
+      ? "This view compares all references available for the selected element."
+      : "This view compares references assigned to the selected facility and beamline.";
 
   await updateSelectedSampleViews();
 }
 
-// ✅ Initialize dashboard
+// ✅ Initialization
 async function initializeDashboard() {
   try {
     if (window.location.protocol === "file:") {
-      setStatus("This page is open as file://. Browser fetch() often blocks local JSON files. Run: python -m http.server 8000, then open http://localhost:8000/index.html", true);
-      console.warn("Open this dashboard through a local server, not by double-clicking the HTML file.");
+      setStatus(
+        "<strong>This page was opened with file://.</strong> Browsers normally block fetch() access to local JSON files. " +
+        "Open the project through a local web server or GitHub Pages.",
+        true
+      );
+      return;
     }
-    await loadDatabaseIndex();
-    setStatus("Database loaded: " + databaseIndex.length + " references found.");
 
-    document.getElementById("sampleSelect").addEventListener("change", updateSelectedSampleViews);
+    if (typeof Plotly === "undefined") {
+      throw new Error(
+        "Plotly did not load. Confirm internet access or host plotly.min.js locally."
+      );
+    }
+
+    await loadDatabaseIndex();
+
+    document
+      .getElementById("sampleSelect")
+      .addEventListener("change", () => void updateSelectedSampleViews());
+
     await updateDashboard();
   } catch (error) {
-    setStatus("Dashboard failed to load. Check that dashboard_export/database_index.json exists and paths are correct. Details: " + error.message, true);
+    setStatus(
+      "<strong>Dashboard failed to initialize.</strong> " +
+      escapeHtml(error.message) +
+      "<br>Page URL: <code>" + escapeHtml(window.location.href) + "</code>",
+      true
+    );
     console.error(error);
   }
 }
 
-initializeDashboard();
+void initializeDashboard();
 </script>
+
 </body>
 </html>
