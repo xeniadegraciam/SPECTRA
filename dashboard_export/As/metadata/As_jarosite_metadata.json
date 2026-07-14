@@ -1,0 +1,69 @@
+{
+  "sample_id": "As_jarosite",
+  "athena_group": "As_jarosite",
+  "element": "As",
+  "edge": "K-edge",
+  "athena_project_file": "D:\\Research\\FieldNotes\\Synchrotron_HardDrive\\Rob_Standards\\Dashboard\\As_refs_USB.prj",
+  "rows": [
+    {
+      "field": "Athena project file",
+      "value": "As_refs_USB.prj",
+      "note": "Project-level Athena file containing multiple groups."
+    },
+    {
+      "field": "Athena group / reference label",
+      "value": "As_jarosite",
+      "note": "One Athena group is treated as one dashboard reference."
+    },
+    {
+      "field": "Original filename",
+      "value": "As_jarosite",
+      "note": "Raw filename if Athena/Larch preserved it."
+    },
+    {
+      "field": "Element and edge",
+      "value": "As K-edge",
+      "note": "Inferred from project or group label unless curated externally."
+    },
+    {
+      "field": "Athena E0",
+      "value": "11885.0",
+      "note": "E0 stored in the Athena group."
+    },
+    {
+      "field": "Pre-edge range",
+      "value": "Not present to Not present",
+      "note": "Athena pre-edge subtraction range."
+    },
+    {
+      "field": "Normalization range",
+      "value": "Not present to Not present",
+      "note": "Athena post-edge normalization range."
+    },
+    {
+      "field": "Rbkg",
+      "value": "1.0",
+      "note": "Background-removal parameter."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "Not present to Not present",
+      "note": "k-range used for forward Fourier transform, if stored."
+    },
+    {
+      "field": "k-weight",
+      "value": "Not present",
+      "note": "k-weight used for EXAFS plotting or transform."
+    },
+    {
+      "field": "FT dk",
+      "value": "Not present",
+      "note": "Fourier-transform window broadening parameter."
+    },
+    {
+      "field": "FT window",
+      "value": "Not present",
+      "note": "Fourier-transform window type."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "sample_id": "Alum_CLS_dat",
+  "athena_group": "Alum_CLS_dat",
+  "element": "S",
+  "edge": "K-edge",
+  "athena_project_file": "D:\\Research\\FieldNotes\\Synchrotron_HardDrive\\Rob_Standards\\Dashboard\\S_refs_athena.prj",
+  "rows": [
+    {
+      "field": "Athena project file",
+      "value": "S_refs_athena.prj",
+      "note": "Project-level Athena file containing multiple groups."
+    },
+    {
+      "field": "Athena group / reference label",
+      "value": "Alum_CLS_dat",
+      "note": "One Athena group is treated as one dashboard reference."
+    },
+    {
+      "field": "Original filename",
+      "value": "Alum_CLS.dat",
+      "note": "Raw filename if Athena/Larch preserved it."
+    },
+    {
+      "field": "Element and edge",
+      "value": "S K-edge",
+      "note": "Inferred from project or group label unless curated externally."
+    },
+    {
+      "field": "Athena E0",
+      "value": "2481.2",
+      "note": "E0 stored in the Athena group."
+    },
+    {
+      "field": "Pre-edge range",
+      "value": "Not present to Not present",
+      "note": "Athena pre-edge subtraction range."
+    },
+    {
+      "field": "Normalization range",
+      "value": "Not present to Not present",
+      "note": "Athena post-edge normalization range."
+    },
+    {
+      "field": "Rbkg",
+      "value": "1.0",
+      "note": "Background-removal parameter."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "Not present to Not present",
+      "note": "k-range used for forward Fourier transform, if stored."
+    },
+    {
+      "field": "k-weight",
+      "value": "Not present",
+      "note": "k-weight used for EXAFS plotting or transform."
+    },
+    {
+      "field": "FT dk",
+      "value": "Not present",
+      "note": "Fourier-transform window broadening parameter."
+    },
+    {
+      "field": "FT window",
+      "value": "Not present",
+      "note": "Fourier-transform window type."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "sample_id": "Biotite_001",
+  "athena_group": "Biotite_001",
+  "element": "Fe",
+  "edge": "K-edge",
+  "athena_project_file": "D:\\Research\\FieldNotes\\Synchrotron_HardDrive\\Rob_Standards\\Dashboard\\Fe_NSLSII_references.prj",
+  "rows": [
+    {
+      "field": "Athena project file",
+      "value": "Fe_NSLSII_references.prj",
+      "note": "Project-level Athena file containing multiple groups."
+    },
+    {
+      "field": "Athena group / reference label",
+      "value": "Biotite_001",
+      "note": "One Athena group is treated as one dashboard reference."
+    },
+    {
+      "field": "Original filename",
+      "value": "Biotite.001",
+      "note": "Raw filename if Athena/Larch preserved it."
+    },
+    {
+      "field": "Element and edge",
+      "value": "Fe K-edge",
+      "note": "Inferred from project or group label unless curated externally."
+    },
+    {
+      "field": "Athena E0",
+      "value": "7120.295",
+      "note": "E0 stored in the Athena group."
+    },
+    {
+      "field": "Pre-edge range",
+      "value": "Not present to Not present",
+      "note": "Athena pre-edge subtraction range."
+    },
+    {
+      "field": "Normalization range",
+      "value": "Not present to Not present",
+      "note": "Athena post-edge normalization range."
+    },
+    {
+      "field": "Rbkg",
+      "value": "1.0",
+      "note": "Background-removal parameter."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "Not present to Not present",
+      "note": "k-range used for forward Fourier transform, if stored."
+    },
+    {
+      "field": "k-weight",
+      "value": "Not present",
+      "note": "k-weight used for EXAFS plotting or transform."
+    },
+    {
+      "field": "FT dk",
+      "value": "Not present",
+      "note": "Fourier-transform window broadening parameter."
+    },
+    {
+      "field": "FT window",
+      "value": "Not present",
+      "note": "Fourier-transform window type."
+    }
+  ]
+}
