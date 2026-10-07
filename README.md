@@ -5,3 +5,7 @@
 The procedures of how synchrotron samples were obtained are explained in this other repo:
 
 <https://xeniadegraciam.github.io/sop_chorover_lab/Synchrotron.html>
+
+README file stored at:
+
+/Research/FieldNotes/Synchrotron/Rob_Standards/Dashboard/SPECTRA/README.md
