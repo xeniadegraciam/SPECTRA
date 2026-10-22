@@ -158,6 +158,7 @@ const preedgeCache = {};
 const chiCache = {};
 const ftCache = {};
 const metadataCache = {};
+let curatedMetadata = {};
 
 // ✅ Element display metadata
 const elementInfo = {
@@ -390,7 +391,12 @@ async function loadSampleData(sample) {
   }
 
   if (!metadataCache[sampleId]) {
-    metadataCache[sampleId] = await fetchJson(sample.metadata_file);
+    try {
+      metadataCache[sampleId] = await fetchJson(sample.metadata_file);
+    } catch (error) {
+      console.warn("Athena metadata missing for", sampleId, error.message);
+      metadataCache[sampleId] = {rows: []};
+    }
   }
 }
 
@@ -521,7 +527,7 @@ function populateSampleDropdown(rows) {
 
 // ✅ Metadata table
 function buildMetadataTable(selectedSampleId) {
-  const metadataRecord = metadataCache[selectedSampleId];
+  const metadataRecord = metadataCache[selectedSampleId] || {rows: []};
   const sample = databaseIndex.find(row => row.sample_id === selectedSampleId);
   const info = elementInfo[sample.element] || {"color":"#111827", "dark_color":"#111827", "text_color":"white"};
 
@@ -533,7 +539,14 @@ function buildMetadataTable(selectedSampleId) {
   badge.style.color = info.text_color;
   badge.style.border = "1px solid " + info.dark_color;
 
-  const rows = metadataRecord.rows || [];
+  // ✅ Merge curated Excel fields with the original Athena metadata by field name
+  const originalRows = Array.isArray(metadataRecord?.rows) ? metadataRecord.rows : [];
+  const curatedRows = curatedMetadata[selectedSampleId] || [];
+  const curatedFields = new Set(curatedRows.map(row => row.field.toLowerCase()));
+  const rows = [
+    ...originalRows.filter(row => !curatedFields.has(String(row.field).toLowerCase())),
+    ...curatedRows
+  ];
   let html = "<table><thead><tr><th>Publication metadata field</th><th>Extracted value from selected reference</th><th>Publication note</th></tr></thead><tbody>";
 
   rows.forEach(function(row) {
@@ -918,6 +931,15 @@ async function initializeDashboard() {
       console.warn("Open this dashboard through a local server, not by double-clicking the HTML file.");
     }
     await loadDatabaseIndex();
+
+    // 📋 Load spreadsheet-derived metadata when available; preserve Athena metadata as fallback
+    try {
+      curatedMetadata = await fetchJsonFromUrl(DATA_ROOT + "dashboard_metadata_overrides.json");
+      console.info("Curated metadata loaded for", Object.keys(curatedMetadata).length, "references");
+    } catch (error) {
+      console.warn("Curated metadata overlay unavailable:", error.message);
+      curatedMetadata = {};
+    }
     setStatus("Database loaded: " + databaseIndex.length + " references found.");
 
     document.getElementById("sampleSelect").addEventListener("change", updateSelectedSampleViews);
