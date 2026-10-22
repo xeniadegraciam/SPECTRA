@@ -1,0 +1,282 @@
+[
+  {
+    "element": "As",
+    "athena_label": "As_jarosite",
+    "sample_id": "As_jarosite",
+    "status": "exported",
+    "points": 412
+  },
+  {
+    "element": "As",
+    "athena_label": "As_schwertmannite",
+    "sample_id": "As_schwertmannite",
+    "status": "exported",
+    "points": 412
+  },
+  {
+    "element": "As",
+    "athena_label": "As_arsenopyrite",
+    "sample_id": "As_arsenopyrite",
+    "status": "exported",
+    "points": 414
+  },
+  {
+    "element": "As",
+    "athena_label": "As_arseniosiderite",
+    "sample_id": "As_arseniosiderite",
+    "status": "exported",
+    "points": 412
+  },
+  {
+    "element": "As",
+    "athena_label": "As_Ferrihydrite",
+    "sample_id": "As_Ferrihydrite",
+    "status": "exported",
+    "points": 412
+  },
+  {
+    "element": "As",
+    "athena_label": "SA  As_Scorodite.txt",
+    "sample_id": "SA_As_Scorodite_txt",
+    "status": "exported",
+    "points": 586
+  },
+  {
+    "element": "As",
+    "athena_label": "As_Bukov_NMNH121413_048_fl.avg",
+    "sample_id": "As_Bukov_NMNH121413_048_fl_avg",
+    "status": "exported",
+    "points": 381
+  },
+  {
+    "element": "As",
+    "athena_label": "As_Pharmacosiderite_NMNH104460_049_fl.avg",
+    "sample_id": "As_Pharmacosiderite_NMNH104460_049_fl_avg",
+    "status": "exported",
+    "points": 381
+  },
+  {
+    "element": "As",
+    "athena_label": "As_Na2HAsO4_AsV_005_tr.avg",
+    "sample_id": "As_Na2HAsO4_AsV_005_tr_avg",
+    "status": "exported",
+    "points": 201
+  },
+  {
+    "element": "As",
+    "athena_label": "AS_CH_SynJar3_hiAs_026_fl.avg",
+    "sample_id": "AS_CH_SynJar3_hiAs_026_fl_avg",
+    "status": "exported",
+    "points": 409
+  },
+  {
+    "element": "Fe",
+    "athena_label": "AsPb_Jar.001",
+    "sample_id": "AsPb_Jar_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Biotite.001",
+    "sample_id": "Biotite_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "CH_Fh.001",
+    "sample_id": "CH_Fh_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "CH_J1_noAs.001",
+    "sample_id": "CH_J1_noAs_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Chlorite_BS.001",
+    "sample_id": "Chlorite_BS_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Fe-Rx_FeAsO4.001",
+    "sample_id": "Fe_Rx_FeAsO4_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Fe-Rx_FeAsS.001",
+    "sample_id": "Fe_Rx_FeAsS_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Fe-Rx_Fh.001",
+    "sample_id": "Fe_Rx_Fh_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Fe-Rx_IK.001",
+    "sample_id": "Fe_Rx_IK_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Fe-Rx_J.001",
+    "sample_id": "Fe_Rx_J_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Fe-Rx_Schw.001",
+    "sample_id": "Fe_Rx_Schw_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Goethite_Nat.001",
+    "sample_id": "Goethite_Nat_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "KB_As_Fhyd.001",
+    "sample_id": "KB_As_Fhyd_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "KB_As_Schw.001",
+    "sample_id": "KB_As_Schw_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "KB_FeAsO4.001",
+    "sample_id": "KB_FeAsO4_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "KB_FeAsS.001",
+    "sample_id": "KB_FeAsS_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "KB_J2_Jar.001",
+    "sample_id": "KB_J2_Jar_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Lepid.001",
+    "sample_id": "Lepid_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Mag.001",
+    "sample_id": "Mag_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Py.001",
+    "sample_id": "Py_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Schw_noAs.001",
+    "sample_id": "Schw_noAs_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Siderite.001",
+    "sample_id": "Siderite_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "Wustite_.001",
+    "sample_id": "Wustite_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "ZnFe2O4.001",
+    "sample_id": "ZnFe2O4_001",
+    "status": "exported",
+    "points": 353
+  },
+  {
+    "element": "Fe",
+    "athena_label": "ferrihydrite.001",
+    "sample_id": "ferrihydrite_001",
+    "status": "exported",
+    "points": 380
+  },
+  {
+    "element": "Fe",
+    "athena_label": "magnetite.001",
+    "sample_id": "magnetite_001",
+    "status": "exported",
+    "points": 379
+  },
+  {
+    "element": "S",
+    "athena_label": "Alum_CLS.dat",
+    "sample_id": "Alum_CLS_dat",
+    "status": "exported",
+    "points": 508
+  },
+  {
+    "element": "S",
+    "athena_label": "S_PbJarosite_UAmineral_041912_fl.avg",
+    "sample_id": "S_PbJarosite_UAmineral_041912_fl_avg",
+    "status": "exported",
+    "points": 532
+  },
+  {
+    "element": "S",
+    "athena_label": "S_CuFeS_4-3_Nov13",
+    "sample_id": "S_CuFeS_4_3_Nov13",
+    "status": "exported",
+    "points": 472
+  },
+  {
+    "element": "S",
+    "athena_label": "pyrrhotite_ESRF_trans_norm.dat",
+    "sample_id": "pyrrhotite_ESRF_trans_norm_dat",
+    "status": "exported",
+    "points": 69
+  }
+]

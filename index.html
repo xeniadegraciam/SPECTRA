@@ -113,7 +113,8 @@ tr:hover { background:#f9fafb; }
 <select id="sampleSelect"></select>
 <br>
 <div class="download-actions" id="downloadActions">
-<a class="download-button" id="downloadRaw" hidden>Raw acquisition file</a>
+<a class="download-button" id="downloadRaw" hidden>Original acquisition file</a>
+<a class="download-button" id="downloadAthenaProject" hidden>Athena project (.prj)</a>
 <a class="download-button" id="downloadUnnormalized" hidden>Unnormalized μ(E) (.dat)</a>
 <a class="download-button" id="downloadNormalized" hidden>Normalized XANES (.dat)</a>
 <a class="download-button" id="downloadChi" hidden>EXAFS χ(k) (.dat)</a>
@@ -622,7 +623,8 @@ function updateDownloadButton(sample) {
   const R = r => Number(r.r ?? r.R ?? r.R_A ?? r.x);
   const ftMag = r => Number(r.chir_mag ?? r.ft_magnitude ?? r.magnitude ?? r.y);
 
-  setDownloadLink('downloadRaw', sample.raw_download || sample.raw_file, 'Original raw acquisition file');
+  setDownloadLink('downloadRaw', sample.raw_download || sample.raw_file, 'Original acquisition file (if verified)');
+  setDownloadLink('downloadAthenaProject', sample.athena_project_download, 'Athena project (.prj, multiple references)');
   setDownloadLink('downloadPackage', sample.package_download || sample.zip_file, 'Complete reference package (.zip)');
   if (sample.unnormalized_download) {
     setDownloadLink('downloadUnnormalized', sample.unnormalized_download, 'Unnormalized μ(E) (.dat)');
