@@ -59,17 +59,32 @@ tr:hover { background:#f9fafb; }
 .status-box { padding:12px 14px; border-radius:8px; background:#eef2ff; border:1px solid #c7d2fe; color:#1e1b4b; margin-bottom:18px; }
 .error-box { padding:12px 14px; border-radius:8px; background:#fee2e2; border:1px solid #fecaca; color:#7f1d1d; margin-bottom:18px; }
 @media (max-width: 1050px) { .plot-grid { grid-template-columns:1fr; } }
+.download-actions {display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.download-actions .download-button {margin-top:0}
+.download-actions .download-button[hidden] {display:none!important}
+.small-note {font-size:12px;color:#475569;line-height:1.5}
+
+/* 📊 Display-only spectrum controls */
+.plot-tuning {padding:18px; margin:0 0 20px; background:#fff; border:1px solid #e5e7eb; border-radius:10px}
+.plot-tuning h3 {margin:0 0 6px}
+.tuning-grid {display:grid; grid-template-columns:repeat(2,minmax(240px,1fr)); gap:14px 28px; margin:16px 0}
+.tuning-grid label {display:flex; justify-content:space-between; gap:12px; margin-bottom:5px}
+.tuning-grid input[type=range] {width:100%; accent-color:#1d4ed8}
+.tuning-options {display:flex; align-items:center; flex-wrap:wrap; gap:16px}
+.tuning-options label {display:inline-flex; align-items:center; gap:7px; margin:0; font-weight:500}
+.tuning-options button {padding:8px 12px; border:1px solid #cbd5e1; border-radius:7px; background:#f8fafc; cursor:pointer}
+@media(max-width:700px){.tuning-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
 <h1>XAS reference dashboard</h1>
-<p>The selected reference is shown as three stacked panels: pre-edge or XANES zoom, normalized XANES edge, and FT-EXAFS magnitude. Data are loaded from external JSON files generated from Athena/Larch outputs.</p>
+<p>Reference spectra are shown as normalized pre-edge/near-edge and XANES plots. EXAFS χ(k) and FT-EXAFS are displayed only for elements with EXAFS data; sulfur is XANES-only.</p>
 </header>
 
 <main>
 <div class="warning">
-<strong>Data-loading model:</strong> This dashboard expects <code>dashboard_export/database_index.json</code> and sample-level JSON files for XANES, pre-edge, FT-EXAFS, and metadata. It is GitHub Pages-ready if the folder structure is preserved.
+<strong>Data-loading model:</strong> This dashboard expects <code>dashboard_export/database_index.json</code> and sample-level JSON files for XANES and metadata, plus EXAFS files where applicable. Sulfur requires XANES only. It is GitHub Pages-ready if the folder structure is preserved.
 </div>
 
 <div id="statusBox" class="status-box">Loading dashboard database...</div>
@@ -108,14 +123,40 @@ tr:hover { background:#f9fafb; }
 <label for="sampleSelect">Select reference spectrum</label>
 <select id="sampleSelect"></select>
 <br>
-<a class="download-button" id="downloadButton" href="#" download>Download selected raw file</a>
+<div class="download-actions" id="downloadActions">
+<a class="download-button" id="downloadRaw" hidden>Original acquisition file</a>
+<a class="download-button" id="downloadAthenaProject" hidden>Athena project (.prj)</a>
+<a class="download-button" id="downloadUnnormalized" hidden>Unnormalized μ(E) (.dat)</a>
+<a class="download-button" id="downloadNormalized" hidden>Normalized XANES (.dat)</a>
+<a class="download-button" id="downloadChi" hidden>EXAFS χ(k) (.dat)</a>
+<a class="download-button" id="downloadFT" hidden>FT-EXAFS (.dat)</a>
+<a class="download-button" id="downloadPackage" hidden>Complete reference (.zip)</a>
+</div>
+<p id="downloadNotice" class="small-note">Only files published in this repository are downloadable. A Windows Athena project path is not a public download.</p>
+</section>
+
+<section class="plot-tuning" aria-label="Spectrum visualization controls">
+  <h3>Interactive spectral comparison</h3>
+  <p class="small-note">Amplification and spacing affect plots only, never the source spectra or downloads. Each panel has independent amplitude scaling. Use inspection mode to examine a single reference.</p>
+  <div class="tuning-grid">
+    <div><label for="preedgeGain">Pre-edge amplification <output id="preedgeGainValue">5×</output></label><input id="preedgeGain" type="range" min="1" max="30" step="0.5" value="5"></div>
+    <div><label for="xanesGain">XANES amplification <output id="xanesGainValue">3×</output></label><input id="xanesGain" type="range" min="0.5" max="12" step="0.5" value="3"></div>
+    <div><label for="exafsGain">EXAFS amplification <output id="exafsGainValue">3×</output></label><input id="exafsGain" type="range" min="0.5" max="12" step="0.5" value="3"></div>
+    <div><label for="ftGain">FT amplification <output id="ftGainValue">3×</output></label><input id="ftGain" type="range" min="0.5" max="12" step="0.5" value="3"></div>
+    <div><label for="verticalGap">Vertical separation <output id="verticalGapValue">2</output></label><input id="verticalGap" type="range" min="0" max="12" step="0.25" value="2"></div>
+  </div>
+  <div class="tuning-options">
+    <label><input type="checkbox" id="inspectionMode"> Inspection mode (selected reference only)</label>
+    <label><input type="checkbox" id="preedgeBaseline" checked> Remove linear pre-edge baseline for display</label>
+    <button type="button" id="resetTuning">Reset visualization</button>
+  </div>
 </section>
 
 <section class="plot-grid">
 <div class="plot-card"><div id="preedgePlot"></div></div>
 <div class="plot-card"><div id="xanesPlot"></div></div>
-<div class="plot-card"><div id="exafsPlot"></div></div>
-<div class="plot-card"><div id="ftPlot"></div></div>
+<div class="plot-card" id="exafsPlotCard"><div id="exafsPlot"></div></div>
+<div class="plot-card" id="ftPlotCard"><div id="ftPlot"></div></div>
 </section>
 
 <h2 class="section-title">Selected reference metadata</h2>
@@ -133,7 +174,7 @@ tr:hover { background:#f9fafb; }
 <section class="interpretation">
 <h2 id="interpretationTitle"></h2>
 <p id="interpretationText"></p>
-<p>The production workflow should be: raw synchrotron file or Athena project file → Larch/Athena processing export → dashboard-ready JSON files → GitHub Pages static viewer. The dashboard is only a viewer. It does not compute EXAFS Fourier transforms in the browser.</p>
+<p>The production workflow should be: raw synchrotron file or Athena project file → Larch/Athena processing export → dashboard-ready JSON files → GitHub Pages static viewer. Sulfur K-edge is treated as XANES-only in this repository. The dashboard is only a viewer and does not compute EXAFS Fourier transforms in the browser.</p>
 </section>
 </section>
 </main>
@@ -188,7 +229,6 @@ const xanesRanges = {
 const exafsRanges = {
   "As": [2, 13],
   "Fe": [2, 13],
-  "S":  [1, 10],
   "Pb": [2, 12]
 };
 
@@ -343,7 +383,7 @@ async function loadDatabaseIndex() {
     element: row.element || "Unknown",
     phase: row.phase || row.athena_group || row.sample_id,
     species: row.species || row.assigned_species || "",
-    facility: row.facility || "Unknown facility",
+    facility: row.facility || (/NSLS[ -]?II/i.test(row.project_file || "") ? "NSLS-II (inferred)" : "Unknown facility"),
     beamline: row.beamline || "Unknown beamline"
   }));
 
@@ -375,19 +415,14 @@ async function loadSampleData(sample) {
     }
   }
 
-  // ✅ Load EXAFS χ(k)
-  if (!chiCache[sampleId]) {
-    if (!sample.chi_file) {
-      throw new Error(
-        "chi_file is missing from database_index.json for " + sampleId
-      );
+  // 🧪 Sulfur K-edge references are XANES-only: no EXAFS fetch or FT computation.
+  if (sample.element !== "S") {
+    if (!chiCache[sampleId] && sample.chi_file) {
+      chiCache[sampleId] = await fetchJson(sample.chi_file);
     }
-
-    chiCache[sampleId] = await fetchJson(sample.chi_file);
-  }
-
-  if (!ftCache[sampleId]) {
-    ftCache[sampleId] = await fetchJson(sample.ft_file);
+    if (!ftCache[sampleId] && sample.ft_file) {
+      ftCache[sampleId] = await fetchJson(sample.ft_file);
+    }
   }
 
   if (!metadataCache[sampleId]) {
@@ -557,20 +592,163 @@ function buildMetadataTable(selectedSampleId) {
   document.getElementById("selectedMetadataTable").innerHTML = html;
 }
 
-// ✅ Download raw or project file
-function updateDownloadButton(sample) {
-  const button = document.getElementById("downloadButton");
-
-  if (sample.raw_file) {
-    button.href = dataUrl(sample.raw_file);
-    button.download = sample.raw_file.split("/").pop();
-    button.textContent = "Download raw file";
-  } else {
-    // ⚠️ Windows absolute paths from project_file cannot be downloaded from GitHub Pages.
-    button.href = "#";
-    button.removeAttribute("download");
-    button.textContent = "Raw file not linked in database_index.json";
+// 📥 Offer interoperable text exports from published spectral JSON, plus original files when supplied.
+// ⚠️ Exports reconstructed from JSON are NOT original raw detector data.
+const downloadObjectUrls = [];
+function releaseDownloadUrls() {
+  while (downloadObjectUrls.length) URL.revokeObjectURL(downloadObjectUrls.pop());
+}
+function setDownloadLink(id, path, label) {
+  const link = document.getElementById(id);
+  link.hidden = !path;
+  link.removeAttribute('download');
+  link.removeAttribute('href');
+  if (!path) return;
+  // ⚠️ Reject local paths and remote links; download URLs must be repository-relative.
+  const safePath = String(path).replace(/\\/g, '/');
+  if (/^(?:[a-z]+:|\/|\.\.\/)/i.test(safePath) || safePath.includes('/../')) {
+    link.hidden = true;
+    console.warn('Unsafe or non-web download path:', path);
+    return;
   }
+  link.href = dataUrl(safePath);
+  link.download = safePath.split('/').pop();
+  link.textContent = label;
+}
+function setGeneratedDatLink(id, records, fields, label, filename, description) {
+  const link = document.getElementById(id);
+  link.hidden = true;
+  if (!Array.isArray(records) || !records.length) return;
+  const lines = ['# ' + description, '# ' + fields.map(f => f.label).join('  ')];
+  for (const record of records) {
+    const values = fields.map(f => f.read(record));
+    if (values.every(Number.isFinite)) lines.push(values.map(v => Number(v).toPrecision(10)).join('\t'));
+  }
+  if (lines.length <= 2) return;
+  const url = URL.createObjectURL(new Blob([lines.join('\n')+'\n'], {type:'text/plain;charset=utf-8'}));
+  downloadObjectUrls.push(url);
+  link.href = url;
+  link.download = filename;
+  link.textContent = label;
+  link.hidden = false;
+}
+function updateDownloadButton(sample) {
+  if (!sample) return;
+  releaseDownloadUrls();
+  const id = sample.sample_id;
+  const filename = id.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const energy = r => Number(r.energy ?? r.energy_eV ?? r.Energy ?? r.x);
+  const rawMu = r => Number(r.mu ?? r.mu_raw ?? r.unnormalized_mu);
+  const norm = r => Number(r.norm ?? r.normalized_mu ?? r.normalizedMu ?? r.mu_norm ?? r.y);
+  const k = r => Number(r.k ?? r.k_Ainv ?? r.wavenumber ?? r.x);
+  const chi = r => Number(r.chi ?? r.chi_k ?? r.y);
+  const R = r => Number(r.r ?? r.R ?? r.R_A ?? r.x);
+  const ftMag = r => Number(r.chir_mag ?? r.ft_magnitude ?? r.magnitude ?? r.y);
+
+  setDownloadLink('downloadRaw', sample.raw_download || sample.raw_file, 'Original acquisition file (if verified)');
+  setDownloadLink('downloadAthenaProject', sample.athena_project_download, 'Athena project (.prj, multiple references)');
+  setDownloadLink('downloadPackage', sample.package_download || sample.zip_file, 'Complete reference package (.zip)');
+  if (sample.unnormalized_download) {
+    setDownloadLink('downloadUnnormalized', sample.unnormalized_download, 'Unnormalized μ(E) (.dat)');
+  } else {
+    setGeneratedDatLink('downloadUnnormalized', xanesCache[id],
+      [{label:'energy_eV',read:energy},{label:'mu',read:rawMu}],
+      'Unnormalized μ(E) (.dat)', filename+'_unnormalized.dat',
+      'Export of unnormalized absorption from published processed JSON, not original detector counts.');
+  }
+  if (sample.normalized_download) {
+    setDownloadLink('downloadNormalized', sample.normalized_download, 'Normalized XANES (.dat)');
+  } else {
+    setGeneratedDatLink('downloadNormalized', xanesCache[id],
+      [{label:'energy_eV',read:energy},{label:'norm',read:norm}],
+      'Normalized XANES (.dat)', filename+'_normalized.dat',
+      'Normalized absorption export from published JSON; see metadata for processing parameters.');
+  }
+  // 🧪 Sulfur XANES-only: never offer EXAFS or FT-EXAFS downloads.
+  if (sample.element === 'S') {
+    setDownloadLink('downloadChi', null, 'EXAFS χ(k) (.dat)');
+    setDownloadLink('downloadFT', null, 'FT-EXAFS (.dat)');
+  } else {
+    if (sample.chi_download) {
+      setDownloadLink('downloadChi', sample.chi_download, 'EXAFS χ(k) (.dat)');
+    } else {
+      setGeneratedDatLink('downloadChi', chiCache[id],
+        [{label:'k_A-1',read:k},{label:'chi',read:chi}],
+        'EXAFS χ(k) (.dat)', filename+'_chi_k.dat',
+        'EXAFS chi(k) from published processed JSON.');
+    }
+    if (sample.ft_download) {
+      setDownloadLink('downloadFT', sample.ft_download, 'FT-EXAFS (.dat)');
+    } else {
+      // ⚠️ Magnitude-only exports are explicitly identified and are not complex FT datasets.
+      setGeneratedDatLink('downloadFT', ftCache[id],
+        [{label:'R_A',read:R},{label:'FT_magnitude_only',read:ftMag}],
+        'FT magnitude only (.dat)', filename+'_ft_magnitude_only.dat',
+        'FT magnitude only. Phase/complex components are not recoverable from this file.');
+    }
+  }
+  const count = [...document.querySelectorAll('#downloadActions a')].filter(a=>!a.hidden).length;
+  document.getElementById('downloadNotice').textContent = count
+    ? 'Available files for this reference: ' + count + '. Generated .dat files are derived from the JSON used in the plots; they are not substitutes for original detector data. FT magnitude exports do not include phase.'
+    : 'No downloadable arrays are available for this reference. Publish the referenced files to enable downloads.';
+}
+
+// 📊 Display-only tuning; no spectral arrays or downloadable files are modified.
+const tuningDefaults = {preedgeGain:5, xanesGain:3, exafsGain:3, ftGain:3, verticalGap:2};
+function plotSetting(name) { return Number(document.getElementById(name).value); }
+function comparisonRows(rows, selectedSampleId) {
+  return document.getElementById('inspectionMode').checked
+    ? rows.filter(row => row.sample_id === selectedSampleId) : rows;
+}
+function plotOffset(index) {
+  return document.getElementById('inspectionMode').checked ? 0 : index * plotSetting('verticalGap');
+}
+function preedgeDisplayValue(points, point, element) {
+  const y = Number(getNorm(point));
+  if (!document.getElementById('preedgeBaseline').checked) return y;
+  const limits = preedgeRanges[element] || [-Infinity, Infinity];
+  const valid = points.filter(p => Number.isFinite(Number(getX(p))) && Number.isFinite(Number(getNorm(p))) && Number(getX(p)) >= limits[0] && Number(getX(p)) <= limits[1]);
+  if (valid.length < 2) return y;
+  const first = valid[0], last = valid[valid.length-1];
+  const x0 = Number(getX(first)), x1 = Number(getX(last)), x = Number(getX(point));
+  if (x1 === x0) return y - Number(getNorm(first));
+  const baseline = Number(getNorm(first)) + (Number(getNorm(last))-Number(getNorm(first))) * (x-x0)/(x1-x0);
+  return y - baseline;
+}
+function redrawTunedPlots() {
+  const selectedSampleId = document.getElementById('sampleSelect').value;
+  const rows = getCurrentRows();
+  if (!selectedSampleId || !rows.length || !xanesCache[selectedSampleId]) return;
+  plotAdvisorPreedge(rows, selectedSampleId);
+  plotAdvisorXanes(rows, selectedSampleId);
+  const exafsRows = rows.filter(row => row.element !== 'S');
+  const selected = databaseIndex.find(row => row.sample_id === selectedSampleId);
+  if (selected && selected.element !== 'S' && exafsRows.length) {
+    plotAdvisorExafs(exafsRows, selectedSampleId);
+    plotAdvisorFT(exafsRows, selectedSampleId);
+  }
+}
+function setupPlotControls() {
+  for (const [id, defaultValue] of Object.entries(tuningDefaults)) {
+    const slider = document.getElementById(id);
+    slider.value = defaultValue;
+    slider.addEventListener('input', () => {
+      document.getElementById(id+'Value').textContent = slider.value + (id === 'verticalGap' ? '' : '×');
+      redrawTunedPlots();
+    });
+  }
+  for (const id of ['inspectionMode','preedgeBaseline']) {
+    document.getElementById(id).addEventListener('change', redrawTunedPlots);
+  }
+  document.getElementById('resetTuning').addEventListener('click', () => {
+    for (const [id, value] of Object.entries(tuningDefaults)) {
+      document.getElementById(id).value = value;
+      document.getElementById(id+'Value').textContent = value + (id === 'verticalGap' ? '' : '×');
+    }
+    document.getElementById('inspectionMode').checked = false;
+    document.getElementById('preedgeBaseline').checked = true;
+    redrawTunedPlots();
+  });
 }
 
 // ✅ Plot helpers
@@ -613,15 +791,16 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
     getEnergyRange(selectedPoints);
   const labels = advisorPeakLabels(selectedSample.element);
 
-  const traces = rows.map(function(row, index) {
+  const visibleRows = comparisonRows(rows, selectedSampleId);
+  const traces = visibleRows.map(function(row, index) {
     const points = preedgeCache[row.sample_id] || [];
-    const offset = getStackOffset(index);
+    const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
     const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
 
     return {
       x: points.map(getX),
-      y: points.map(point => getNorm(point) + offset),
+      y: points.map(point => plotSetting("preedgeGain") * preedgeDisplayValue(points, point, row.element) + offset),
       type: "scatter",
       mode: "lines",
       name: row.sample_id,
@@ -631,19 +810,13 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
     };
   });
 
-  const annotations = rows.map(function(row, index) {
-    return {x:selectedRange[1], y:getStackOffset(index) + 1.0, text:getSampleLabel(row), showarrow:false, xanchor:"right", font:{size:12}};
-  });
+  const annotations = []; // Sample IDs remain available in hover labels.
 
-  const whiteLine = getWhiteLine(selectedPoints);
-  if (whiteLine.x !== null) {
-    annotations.push({x:whiteLine.x, y:getStackOffset(rows.length - 1) + 1.45, text:labels[0], showarrow:true, arrowhead:2, ax:-35, ay:-25, font:{size:13}});
-  }
 
   Plotly.newPlot("preedgePlot", traces, {
     title: selectedSample.element + " pre-edge / XANES zoom",
     xaxis: {title: "Energy (eV)", range:selectedRange, showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Normalized μ(E) + vertical offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: "Display-scaled pre-edge μ(E) + offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     showlegend:false,
     annotations: annotations,
     margin: {t:60, r:25, b:55, l:65}
@@ -661,15 +834,16 @@ function plotAdvisorXanes(rows, selectedSampleId) {
   
   const whiteLine = getWhiteLine(selectedPoints);
 
-  const traces = rows.map(function(row, index) {
+  const visibleRows = comparisonRows(rows, selectedSampleId);
+  const traces = visibleRows.map(function(row, index) {
     const points = xanesCache[row.sample_id] || [];
-    const offset = getStackOffset(index);
+    const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
     const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
 
     return {
       x: points.map(getX),
-      y: points.map(point => getNorm(point) + offset),
+      y: points.map(point => plotSetting("xanesGain") * (Number(getNorm(point)) - 1) + offset),
       type: "scatter",
       mode: "lines",
       name: row.sample_id,
@@ -679,20 +853,18 @@ function plotAdvisorXanes(rows, selectedSampleId) {
     };
   });
 
-  const annotations = rows.map(function(row, index) {
-    return {x:selectedRange[1], y:getStackOffset(index) + 1.0, text:getSampleLabel(row), showarrow:false, xanchor:"right", font:{size:12}};
-  });
+  const annotations = []; // Sample IDs remain available in hover labels.
 
   const shapes = [];
   if (whiteLine.x !== null) {
     shapes.push({type:"line", x0:whiteLine.x, x1:whiteLine.x, y0:0, y1:1, yref:"paper", line:{dash:"dash", width:1.3, color:"#999999"}});
-    annotations.push({x:whiteLine.x, y:getStackOffset(rows.length - 1) + 1.45, text:"white line", showarrow:true, arrowhead:2, ax:35, ay:-25, font:{size:13}});
+    annotations.push({x:whiteLine.x, y:getStackOffset(visibleRows.length - 1) + 1.45, text:"white line", showarrow:true, arrowhead:2, ax:35, ay:-25, font:{size:13}});
   }
 
   Plotly.newPlot("xanesPlot", traces, {
     title: selectedSample.element + " normalized XANES",
     xaxis: {title: "Energy (eV)", range:selectedRange, showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Normalized μ(E)", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: "Display-scaled normalized μ(E) + offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     shapes: shapes,
     annotations: annotations,
     showlegend:false,
@@ -716,9 +888,10 @@ function plotAdvisorExafs(rows, selectedSampleId) {
   const selectedRange =
     exafsRanges[selectedSample.element] || [2, 13];
 
-  const traces = rows.map(function(row, index) {
+  const visibleRows = comparisonRows(rows, selectedSampleId);
+  const traces = visibleRows.map(function(row, index) {
     const points = chiCache[row.sample_id] || [];
-    const offset = index * 4.0;
+    const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
 
     const lineColor = isSelected
@@ -728,7 +901,7 @@ function plotAdvisorExafs(rows, selectedSampleId) {
     return {
       x: points.map(getK),
       y: points.map(function(point) {
-        return getK2Chi(point) + offset;
+        return plotSetting("exafsGain") * getK2Chi(point) + offset;
       }),
       type: "scatter",
       mode: "lines",
@@ -752,17 +925,7 @@ function plotAdvisorExafs(rows, selectedSampleId) {
     };
   });
 
-  const annotations = rows.map(function(row, index) {
-    return {
-      x: selectedRange[1],
-      y: index * 4.0,
-      text: getSampleLabel(row),
-      showarrow: false,
-      xanchor: "right",
-      yanchor: "bottom",
-      font: {size: 12}
-    };
-  });
+  const annotations = []; // Sample IDs remain available in hover labels.
 
   Plotly.newPlot(
     "exafsPlot",
@@ -777,7 +940,7 @@ function plotAdvisorExafs(rows, selectedSampleId) {
         ticks: "outside"
       },
       yaxis: {
-        title: "k²χ(k) + vertical offset",
+        title: "Display-scaled k²χ(k) + offset",
         showticklabels: false,
         showline: true,
         mirror: true,
@@ -805,15 +968,16 @@ function plotAdvisorFT(rows, selectedSampleId) {
   const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
   const labels = advisorPeakLabels(selectedSample.element);
 
-  const traces = rows.map(function(row, index) {
+  const visibleRows = comparisonRows(rows, selectedSampleId);
+  const traces = visibleRows.map(function(row, index) {
     const points = ftCache[row.sample_id] || [];
-    const offset = getStackOffset(index);
+    const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
     const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
 
     return {
       x: points.map(getR),
-      y: points.map(point => getFTMagnitude(point) + offset),
+      y: points.map(point => plotSetting("ftGain") * getFTMagnitude(point) + offset),
       type: "scatter",
       mode: "lines",
       name: row.sample_id,
@@ -823,14 +987,12 @@ function plotAdvisorFT(rows, selectedSampleId) {
     };
   });
 
-  const annotations = rows.map(function(row, index) {
-    return {x:5.85, y:getStackOffset(index) + 1.0, text:getSampleLabel(row), showarrow:false, xanchor:"right", font:{size:12}};
-  });
+  const annotations = []; // Sample IDs remain available in hover labels.
 
   Plotly.newPlot("ftPlot", traces, {
     title: selectedSample.element + " EXAFS FT",
     xaxis: {title: "R + Δ (Å)", range:[0, 6], showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Fourier transform magnitude", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: "Display-scaled FT magnitude + offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     annotations: annotations,
     showlegend:false,
     margin: {t:60, r:25, b:55, l:70}
@@ -869,8 +1031,16 @@ async function updateSelectedSampleViews() {
 
     plotAdvisorPreedge(rows, selectedSampleId);
     plotAdvisorXanes(rows, selectedSampleId);
-    plotAdvisorExafs(rows, selectedSampleId);
-    plotAdvisorFT(rows, selectedSampleId);    
+    // 🧪 Sulfur has only XANES: hide both EXAFS panels and do not plot sulfur traces.
+    const exafsRows = rows.filter(row => row.element !== "S");
+    const showExafs = selectedSample.element !== "S" && exafsRows.length > 0;
+    document.getElementById("exafsPlotCard").classList.toggle("hidden", !showExafs);
+    document.getElementById("ftPlotCard").classList.toggle("hidden", !showExafs);
+    if (showExafs) {
+      plotAdvisorExafs(exafsRows, selectedSampleId);
+      plotAdvisorFT(exafsRows, selectedSampleId);
+    }    
+    // 📋 Metadata and XANES downloads remain available for sulfur.
     buildMetadataTable(selectedSampleId);
     updateDownloadButton(selectedSample);
   } catch (error) {
@@ -930,6 +1100,7 @@ async function initializeDashboard() {
       setStatus("This page is open as file://. Browser fetch() often blocks local JSON files. Run: python -m http.server 8000, then open http://localhost:8000/index.html", true);
       console.warn("Open this dashboard through a local server, not by double-clicking the HTML file.");
     }
+    setupPlotControls();
     await loadDatabaseIndex();
 
     // 📋 Load spreadsheet-derived metadata when available; preserve Athena metadata as fallback
