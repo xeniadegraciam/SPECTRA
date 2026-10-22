@@ -89,6 +89,12 @@ for element, project_filename in projects.items():
         row.setdefault('beamline', 'Unverified')
         report.append({'element': element, 'athena_label': label, 'sample_id': sample_id, 'status': 'exported', 'points': len(energies)})
 
+# 🧪 Sulfur K-edge is XANES-only: remove any legacy EXAFS links.
+for entry in index:
+    if entry.get('element') == 'S':
+        for field in ('chi_file', 'ft_file', 'chi_download', 'ft_download', 'exafs_file', 'ft_exafs_file'):
+            entry.pop(field, None)
+
 # 💾 Update the index and produce an auditable reconciliation report.
 index_file.write_text(json.dumps(index, indent=2, ensure_ascii=False), encoding='utf-8')
 (export_folder / 'athena_export_audit.json').write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding='utf-8')

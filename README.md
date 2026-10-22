@@ -262,3 +262,10 @@ When using these spectra in a publication, record the **reference ID, element/ed
 
 **Repository:** https://xeniadegraciam.github.io/SPECTRA/  
 **Laboratory synchrotron SOP:** https://xeniadegraciam.github.io/sop_chorover_lab/Synchrotron.html
+
+
+## Sulfur K-edge: XANES-only processing
+
+Sulfur K-edge reference spectra in SPECTRA are analyzed and displayed using **XANES only**. Sulfur K-edge XANES is highly sensitive to sulfur oxidation state and bonding environment, allowing comparison of reduced sulfur species, intermediate oxidation states, and sulfate. The low sulfur K-edge energy (approximately 2.47 keV) makes experiments more sensitive to air absorption, sample thickness, and instrumental constraints. Furthermore, sulfur K-edge spectra commonly feature strong near-edge resonances, and a sufficiently long, high-quality post-edge range for reliable EXAFS analysis is not necessarily available in this dataset. **EXAFS is not physically impossible at the sulfur K-edge**, but no sulfur EXAFS analysis is claimed for this repository.
+
+When sulfur is selected, the dashboard shows only pre-edge/near-edge and normalized XANES panels. It does not load, plot, calculate, or offer downloads for sulfur EXAFS χ(k) or FT-EXAFS. Unnormalized μ(E), normalized XANES, and the original Athena project remain downloadable where published. The database index omits sulfur EXAFS file references. For As and Fe, existing EXAFS functionality remains unchanged.

@@ -68,12 +68,12 @@ tr:hover { background:#f9fafb; }
 <body>
 <header>
 <h1>XAS reference dashboard</h1>
-<p>The selected reference is shown as three stacked panels: pre-edge or XANES zoom, normalized XANES edge, and FT-EXAFS magnitude. Data are loaded from external JSON files generated from Athena/Larch outputs.</p>
+<p>Reference spectra are shown as normalized pre-edge/near-edge and XANES plots. EXAFS χ(k) and FT-EXAFS are displayed only for elements with EXAFS data; sulfur is XANES-only.</p>
 </header>
 
 <main>
 <div class="warning">
-<strong>Data-loading model:</strong> This dashboard expects <code>dashboard_export/database_index.json</code> and sample-level JSON files for XANES, pre-edge, FT-EXAFS, and metadata. It is GitHub Pages-ready if the folder structure is preserved.
+<strong>Data-loading model:</strong> This dashboard expects <code>dashboard_export/database_index.json</code> and sample-level JSON files for XANES and metadata, plus EXAFS files where applicable. Sulfur requires XANES only. It is GitHub Pages-ready if the folder structure is preserved.
 </div>
 
 <div id="statusBox" class="status-box">Loading dashboard database...</div>
@@ -127,8 +127,8 @@ tr:hover { background:#f9fafb; }
 <section class="plot-grid">
 <div class="plot-card"><div id="preedgePlot"></div></div>
 <div class="plot-card"><div id="xanesPlot"></div></div>
-<div class="plot-card"><div id="exafsPlot"></div></div>
-<div class="plot-card"><div id="ftPlot"></div></div>
+<div class="plot-card" id="exafsPlotCard"><div id="exafsPlot"></div></div>
+<div class="plot-card" id="ftPlotCard"><div id="ftPlot"></div></div>
 </section>
 
 <h2 class="section-title">Selected reference metadata</h2>
@@ -146,7 +146,7 @@ tr:hover { background:#f9fafb; }
 <section class="interpretation">
 <h2 id="interpretationTitle"></h2>
 <p id="interpretationText"></p>
-<p>The production workflow should be: raw synchrotron file or Athena project file → Larch/Athena processing export → dashboard-ready JSON files → GitHub Pages static viewer. The dashboard is only a viewer. It does not compute EXAFS Fourier transforms in the browser.</p>
+<p>The production workflow should be: raw synchrotron file or Athena project file → Larch/Athena processing export → dashboard-ready JSON files → GitHub Pages static viewer. Sulfur K-edge is treated as XANES-only in this repository. The dashboard is only a viewer and does not compute EXAFS Fourier transforms in the browser.</p>
 </section>
 </section>
 </main>
@@ -201,7 +201,6 @@ const xanesRanges = {
 const exafsRanges = {
   "As": [2, 13],
   "Fe": [2, 13],
-  "S":  [1, 10],
   "Pb": [2, 12]
 };
 
@@ -388,19 +387,14 @@ async function loadSampleData(sample) {
     }
   }
 
-  // ✅ Load EXAFS χ(k)
-  if (!chiCache[sampleId]) {
-    if (!sample.chi_file) {
-      throw new Error(
-        "chi_file is missing from database_index.json for " + sampleId
-      );
+  // 🧪 Sulfur K-edge references are XANES-only: no EXAFS fetch or FT computation.
+  if (sample.element !== "S") {
+    if (!chiCache[sampleId] && sample.chi_file) {
+      chiCache[sampleId] = await fetchJson(sample.chi_file);
     }
-
-    chiCache[sampleId] = await fetchJson(sample.chi_file);
-  }
-
-  if (!ftCache[sampleId]) {
-    ftCache[sampleId] = await fetchJson(sample.ft_file);
+    if (!ftCache[sampleId] && sample.ft_file) {
+      ftCache[sampleId] = await fetchJson(sample.ft_file);
+    }
   }
 
   if (!metadataCache[sampleId]) {
@@ -642,22 +636,28 @@ function updateDownloadButton(sample) {
       'Normalized XANES (.dat)', filename+'_normalized.dat',
       'Normalized absorption export from published JSON; see metadata for processing parameters.');
   }
-  if (sample.chi_download) {
-    setDownloadLink('downloadChi', sample.chi_download, 'EXAFS χ(k) (.dat)');
+  // 🧪 Sulfur XANES-only: never offer EXAFS or FT-EXAFS downloads.
+  if (sample.element === 'S') {
+    setDownloadLink('downloadChi', null, 'EXAFS χ(k) (.dat)');
+    setDownloadLink('downloadFT', null, 'FT-EXAFS (.dat)');
   } else {
-    setGeneratedDatLink('downloadChi', chiCache[id],
-      [{label:'k_A-1',read:k},{label:'chi',read:chi}],
-      'EXAFS χ(k) (.dat)', filename+'_chi_k.dat',
-      'EXAFS chi(k) from published processed JSON.');
-  }
-  if (sample.ft_download) {
-    setDownloadLink('downloadFT', sample.ft_download, 'FT-EXAFS (.dat)');
-  } else {
-    // ⚠️ Magnitude-only exports are explicitly identified and are not complex FT datasets.
-    setGeneratedDatLink('downloadFT', ftCache[id],
-      [{label:'R_A',read:R},{label:'FT_magnitude_only',read:ftMag}],
-      'FT magnitude only (.dat)', filename+'_ft_magnitude_only.dat',
-      'FT magnitude only. Phase/complex components are not recoverable from this file.');
+    if (sample.chi_download) {
+      setDownloadLink('downloadChi', sample.chi_download, 'EXAFS χ(k) (.dat)');
+    } else {
+      setGeneratedDatLink('downloadChi', chiCache[id],
+        [{label:'k_A-1',read:k},{label:'chi',read:chi}],
+        'EXAFS χ(k) (.dat)', filename+'_chi_k.dat',
+        'EXAFS chi(k) from published processed JSON.');
+    }
+    if (sample.ft_download) {
+      setDownloadLink('downloadFT', sample.ft_download, 'FT-EXAFS (.dat)');
+    } else {
+      // ⚠️ Magnitude-only exports are explicitly identified and are not complex FT datasets.
+      setGeneratedDatLink('downloadFT', ftCache[id],
+        [{label:'R_A',read:R},{label:'FT_magnitude_only',read:ftMag}],
+        'FT magnitude only (.dat)', filename+'_ft_magnitude_only.dat',
+        'FT magnitude only. Phase/complex components are not recoverable from this file.');
+    }
   }
   const count = [...document.querySelectorAll('#downloadActions a')].filter(a=>!a.hidden).length;
   document.getElementById('downloadNotice').textContent = count
@@ -961,8 +961,16 @@ async function updateSelectedSampleViews() {
 
     plotAdvisorPreedge(rows, selectedSampleId);
     plotAdvisorXanes(rows, selectedSampleId);
-    plotAdvisorExafs(rows, selectedSampleId);
-    plotAdvisorFT(rows, selectedSampleId);    
+    // 🧪 Sulfur has only XANES: hide both EXAFS panels and do not plot sulfur traces.
+    const exafsRows = rows.filter(row => row.element !== "S");
+    const showExafs = selectedSample.element !== "S" && exafsRows.length > 0;
+    document.getElementById("exafsPlotCard").classList.toggle("hidden", !showExafs);
+    document.getElementById("ftPlotCard").classList.toggle("hidden", !showExafs);
+    if (showExafs) {
+      plotAdvisorExafs(exafsRows, selectedSampleId);
+      plotAdvisorFT(exafsRows, selectedSampleId);
+    }    
+    // 📋 Metadata and XANES downloads remain available for sulfur.
     buildMetadataTable(selectedSampleId);
     updateDownloadButton(selectedSample);
   } catch (error) {
