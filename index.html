@@ -810,7 +810,6 @@ function plotOffset(index, panel) {
 }
 function preedgeDisplayValue(points, point, element) {
   const y = Number(getNorm(point));
-  if (!document.getElementById('preedgeBaseline').checked) return y;
   const limits = preedgeRanges[element] || [-Infinity, Infinity];
   const valid = points.filter(p => Number.isFinite(Number(getX(p))) && Number.isFinite(Number(getNorm(p))) && Number(getX(p)) >= limits[0] && Number(getX(p)) <= limits[1]);
   if (valid.length < 2) return y;
@@ -842,7 +841,7 @@ function setupPlotControls() {
       redrawTunedPlots();
     });
   }
-  for (const id of ['inspectionMode','preedgeBaseline']) {
+  for (const id of ['inspectionMode']) {
     document.getElementById(id).addEventListener('change', redrawTunedPlots);
   }
   document.getElementById('selectAllReferences').addEventListener('click', () => {
@@ -859,7 +858,6 @@ function setupPlotControls() {
       document.getElementById(id+'Value').textContent = value + (id.endsWith('Gap') ? '' : '×');
     }
     document.getElementById('inspectionMode').checked = false;
-    document.getElementById('preedgeBaseline').checked = true;
     redrawTunedPlots();
   });
 }
