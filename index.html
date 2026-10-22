@@ -59,6 +59,10 @@ tr:hover { background:#f9fafb; }
 .status-box { padding:12px 14px; border-radius:8px; background:#eef2ff; border:1px solid #c7d2fe; color:#1e1b4b; margin-bottom:18px; }
 .error-box { padding:12px 14px; border-radius:8px; background:#fee2e2; border:1px solid #fecaca; color:#7f1d1d; margin-bottom:18px; }
 @media (max-width: 1050px) { .plot-grid { grid-template-columns:1fr; } }
+.download-actions {display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.download-actions .download-button {margin-top:0}
+.download-actions .download-button[hidden] {display:none!important}
+.small-note {font-size:12px;color:#475569;line-height:1.5}
 </style>
 </head>
 <body>
@@ -108,7 +112,15 @@ tr:hover { background:#f9fafb; }
 <label for="sampleSelect">Select reference spectrum</label>
 <select id="sampleSelect"></select>
 <br>
-<a class="download-button" id="downloadButton" href="#" download>Download selected raw file</a>
+<div class="download-actions" id="downloadActions">
+<a class="download-button" id="downloadRaw" hidden>Raw acquisition file</a>
+<a class="download-button" id="downloadUnnormalized" hidden>Unnormalized μ(E) (.dat)</a>
+<a class="download-button" id="downloadNormalized" hidden>Normalized XANES (.dat)</a>
+<a class="download-button" id="downloadChi" hidden>EXAFS χ(k) (.dat)</a>
+<a class="download-button" id="downloadFT" hidden>FT-EXAFS (.dat)</a>
+<a class="download-button" id="downloadPackage" hidden>Complete reference (.zip)</a>
+</div>
+<p id="downloadNotice" class="small-note">Only files published in this repository are downloadable. A Windows Athena project path is not a public download.</p>
 </section>
 
 <section class="plot-grid">
@@ -343,7 +355,7 @@ async function loadDatabaseIndex() {
     element: row.element || "Unknown",
     phase: row.phase || row.athena_group || row.sample_id,
     species: row.species || row.assigned_species || "",
-    facility: row.facility || "Unknown facility",
+    facility: row.facility || (/NSLS[ -]?II/i.test(row.project_file || "") ? "NSLS-II (inferred)" : "Unknown facility"),
     beamline: row.beamline || "Unknown beamline"
   }));
 
@@ -557,20 +569,98 @@ function buildMetadataTable(selectedSampleId) {
   document.getElementById("selectedMetadataTable").innerHTML = html;
 }
 
-// ✅ Download raw or project file
-function updateDownloadButton(sample) {
-  const button = document.getElementById("downloadButton");
-
-  if (sample.raw_file) {
-    button.href = dataUrl(sample.raw_file);
-    button.download = sample.raw_file.split("/").pop();
-    button.textContent = "Download raw file";
-  } else {
-    // ⚠️ Windows absolute paths from project_file cannot be downloaded from GitHub Pages.
-    button.href = "#";
-    button.removeAttribute("download");
-    button.textContent = "Raw file not linked in database_index.json";
+// 📥 Offer interoperable text exports from published spectral JSON, plus original files when supplied.
+// ⚠️ Exports reconstructed from JSON are NOT original raw detector data.
+const downloadObjectUrls = [];
+function releaseDownloadUrls() {
+  while (downloadObjectUrls.length) URL.revokeObjectURL(downloadObjectUrls.pop());
+}
+function setDownloadLink(id, path, label) {
+  const link = document.getElementById(id);
+  link.hidden = !path;
+  link.removeAttribute('download');
+  link.removeAttribute('href');
+  if (!path) return;
+  // ⚠️ Reject local paths and remote links; download URLs must be repository-relative.
+  const safePath = String(path).replace(/\\/g, '/');
+  if (/^(?:[a-z]+:|\/|\.\.\/)/i.test(safePath) || safePath.includes('/../')) {
+    link.hidden = true;
+    console.warn('Unsafe or non-web download path:', path);
+    return;
   }
+  link.href = dataUrl(safePath);
+  link.download = safePath.split('/').pop();
+  link.textContent = label;
+}
+function setGeneratedDatLink(id, records, fields, label, filename, description) {
+  const link = document.getElementById(id);
+  link.hidden = true;
+  if (!Array.isArray(records) || !records.length) return;
+  const lines = ['# ' + description, '# ' + fields.map(f => f.label).join('  ')];
+  for (const record of records) {
+    const values = fields.map(f => f.read(record));
+    if (values.every(Number.isFinite)) lines.push(values.map(v => Number(v).toPrecision(10)).join('\t'));
+  }
+  if (lines.length <= 2) return;
+  const url = URL.createObjectURL(new Blob([lines.join('\n')+'\n'], {type:'text/plain;charset=utf-8'}));
+  downloadObjectUrls.push(url);
+  link.href = url;
+  link.download = filename;
+  link.textContent = label;
+  link.hidden = false;
+}
+function updateDownloadButton(sample) {
+  if (!sample) return;
+  releaseDownloadUrls();
+  const id = sample.sample_id;
+  const filename = id.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const energy = r => Number(r.energy ?? r.energy_eV ?? r.Energy ?? r.x);
+  const rawMu = r => Number(r.mu ?? r.mu_raw ?? r.unnormalized_mu);
+  const norm = r => Number(r.norm ?? r.normalized_mu ?? r.normalizedMu ?? r.mu_norm ?? r.y);
+  const k = r => Number(r.k ?? r.k_Ainv ?? r.wavenumber ?? r.x);
+  const chi = r => Number(r.chi ?? r.chi_k ?? r.y);
+  const R = r => Number(r.r ?? r.R ?? r.R_A ?? r.x);
+  const ftMag = r => Number(r.chir_mag ?? r.ft_magnitude ?? r.magnitude ?? r.y);
+
+  setDownloadLink('downloadRaw', sample.raw_download || sample.raw_file, 'Original raw acquisition file');
+  setDownloadLink('downloadPackage', sample.package_download || sample.zip_file, 'Complete reference package (.zip)');
+  if (sample.unnormalized_download) {
+    setDownloadLink('downloadUnnormalized', sample.unnormalized_download, 'Unnormalized μ(E) (.dat)');
+  } else {
+    setGeneratedDatLink('downloadUnnormalized', xanesCache[id],
+      [{label:'energy_eV',read:energy},{label:'mu',read:rawMu}],
+      'Unnormalized μ(E) (.dat)', filename+'_unnormalized.dat',
+      'Export of unnormalized absorption from published processed JSON, not original detector counts.');
+  }
+  if (sample.normalized_download) {
+    setDownloadLink('downloadNormalized', sample.normalized_download, 'Normalized XANES (.dat)');
+  } else {
+    setGeneratedDatLink('downloadNormalized', xanesCache[id],
+      [{label:'energy_eV',read:energy},{label:'norm',read:norm}],
+      'Normalized XANES (.dat)', filename+'_normalized.dat',
+      'Normalized absorption export from published JSON; see metadata for processing parameters.');
+  }
+  if (sample.chi_download) {
+    setDownloadLink('downloadChi', sample.chi_download, 'EXAFS χ(k) (.dat)');
+  } else {
+    setGeneratedDatLink('downloadChi', chiCache[id],
+      [{label:'k_A-1',read:k},{label:'chi',read:chi}],
+      'EXAFS χ(k) (.dat)', filename+'_chi_k.dat',
+      'EXAFS chi(k) from published processed JSON.');
+  }
+  if (sample.ft_download) {
+    setDownloadLink('downloadFT', sample.ft_download, 'FT-EXAFS (.dat)');
+  } else {
+    // ⚠️ Magnitude-only exports are explicitly identified and are not complex FT datasets.
+    setGeneratedDatLink('downloadFT', ftCache[id],
+      [{label:'R_A',read:R},{label:'FT_magnitude_only',read:ftMag}],
+      'FT magnitude only (.dat)', filename+'_ft_magnitude_only.dat',
+      'FT magnitude only. Phase/complex components are not recoverable from this file.');
+  }
+  const count = [...document.querySelectorAll('#downloadActions a')].filter(a=>!a.hidden).length;
+  document.getElementById('downloadNotice').textContent = count
+    ? 'Available files for this reference: ' + count + '. Generated .dat files are derived from the JSON used in the plots; they are not substitutes for original detector data. FT magnitude exports do not include phase.'
+    : 'No downloadable arrays are available for this reference. Publish the referenced files to enable downloads.';
 }
 
 // ✅ Plot helpers
