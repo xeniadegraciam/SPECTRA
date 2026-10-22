@@ -89,7 +89,7 @@ tr:hover { background:#f9fafb; }
 <body>
 <header>
 <h1>XAS reference dashboard</h1>
-<p>Reference spectra are shown as normalized pre-edge/near-edge and XANES plots. EXAFS χ(k) and FT-EXAFS are displayed only for elements with EXAFS data; sulfur is XANES-only.</p>
+<p>Reference spectra are shown as normalized pre-edge and XANES plots. EXAFS χ(k) and FT-EXAFS are displayed only for elements with EXAFS data; sulfur is XANES-only.</p>
 </header>
 
 <main>
@@ -151,14 +151,14 @@ tr:hover { background:#f9fafb; }
   <div class="tuning-grid">
     <div><label for="preedgeGain">Pre-edge amplification <output id="preedgeGainValue">5×</output></label><input id="preedgeGain" type="range" min="1" max="30" step="0.5" value="5"></div>
     <div><label for="xanesGain">XANES amplification <output id="xanesGainValue">3×</output></label><input id="xanesGain" type="range" min="0.5" max="12" step="0.5" value="3"></div>
+    <div><label for="xanesGap">XANES vertical separation <output id="xanesGapValue">2</output></label><input id="xanesGap" type="range" min="0" max="12" step="0.25" value="2"></div>
     <div><label for="exafsGain">EXAFS amplification <output id="exafsGainValue">3×</output></label><input id="exafsGain" type="range" min="0.5" max="12" step="0.5" value="3"></div>
     <div><label for="ftGain">FT amplification <output id="ftGainValue">3×</output></label><input id="ftGain" type="range" min="0.5" max="12" step="0.5" value="3"></div>
-    <div><label for="xanesGap">XANES vertical separation <output id="xanesGapValue">2</output></label><input id="xanesGap" type="range" min="0" max="12" step="0.25" value="2"></div>
     <div><label for="exafsGap">EXAFS vertical separation <output id="exafsGapValue">2</output></label><input id="exafsGap" type="range" min="0" max="12" step="0.25" value="2"></div>
   </div>
   <div class="tuning-options">
     <label><input type="checkbox" id="inspectionMode"> Inspection mode (selected reference only)</label>
-    <label><input type="checkbox" id="preedgeBaseline" checked> Remove linear pre-edge baseline for display</label>
+    <label><input type="checkbox" id="preedgeBaseline"> Remove linear pre-edge baseline for display</label>
     <button type="button" id="resetTuning">Reset visualization</button>
   </div>
 </section>
@@ -228,7 +228,7 @@ const elementInfo = {
 
 // ✅ Element-specific pre-edge XANES zoom ranges
 const preedgeRanges = {
-  "As": [11860, 11885],
+  "As": [11855, 11865],
   "Fe": [7110, 7120],
   "S":  [2465, 2480],
   "Pb": [13020, 13040]
@@ -246,7 +246,7 @@ const xanesRanges = {
 const exafsRanges = {
   "As": [2, 13],
   "Fe": [2, 13],
-  "Pb": [2, 12]
+  "Pb": [2, 13]
 };
 
 // ✅ Minimal periodic table layout used for selecting supported elements
@@ -928,9 +928,9 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
 
 
   Plotly.newPlot("preedgePlot", traces, {
-    title: boldTitle(selectedSample.element === "As" ? "As near-edge / pre-edge region (5 eV ticks)" : selectedSample.element + " pre-edge / XANES zoom"),
+    title: boldTitle(selectedSample.element === "As" ? "As pre-edge region" : selectedSample.element + " pre-edge XANES"),
     xaxis: {title: boldTitle("Energy (eV)"), range:selectedRange, tickformat:".0f", tickmode:"linear", tick0:selectedSample.element === "As" ? 11860 : undefined, dtick:selectedSample.element === "As" ? 5 : undefined, exponentformat:"none", showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: boldTitle("Display-scaled pre-edge μ(E) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: boldTitle("pre-edge μ(E) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     showlegend:true,
     annotations: annotations,
     ...plotStyle
@@ -978,7 +978,7 @@ function plotAdvisorXanes(rows, selectedSampleId) {
   Plotly.newPlot("xanesPlot", traces, {
     title: boldTitle(selectedSample.element + " normalized XANES"),
     xaxis: {title: boldTitle("Energy (eV)"), range:selectedRange, tickformat:".0f", exponentformat:"none", showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: boldTitle("Display-scaled normalized μ(E) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: boldTitle("Normalized μ(E) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     shapes: shapes,
     annotations: annotations,
     showlegend:true,
@@ -1053,7 +1053,7 @@ function plotAdvisorExafs(rows, selectedSampleId) {
         ticks: "outside"
       },
       yaxis: {
-        title: boldTitle("Display-scaled k²χ(k) + offset"),
+        title: boldTitle("k²χ(k) + offset"),
         showticklabels: false,
         showline: true,
         mirror: true,
@@ -1098,7 +1098,7 @@ function plotAdvisorFT(rows, selectedSampleId) {
   Plotly.newPlot("ftPlot", traces, {
     title: boldTitle(selectedSample.element + " EXAFS FT"),
     xaxis: {title: boldTitle("R + Δ (Å)"), range:[0, 6], showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: boldTitle("Display-scaled FT magnitude + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: boldTitle("FT magnitude + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     annotations: annotations,
     showlegend:true,
     ...plotStyle
