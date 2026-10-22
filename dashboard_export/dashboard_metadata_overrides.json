@@ -1,0 +1,1282 @@
+{
+  "As_jarosite": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -50 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "160 to 750.8 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "2 to 13 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "As_schwertmannite": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -50 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "160 to 750.8 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "2 to 13 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "As_arsenopyrite": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -50 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 750 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "2 to 13 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "As_arseniosiderite": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -50 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "250 to 750.8 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "1 to 13 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "As_Ferrihydrite": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -50 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "160 to 750.8 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "2 to 13 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "SA_As_Scorodite_txt": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -50 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 1011.32 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 16 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "As_Bukov_NMNH121413_048_fl_avg": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -90 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 633.9 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 11.879 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "As_Pharmacosiderite_NMNH104460_049_fl_avg": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -90 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 649.7 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 12.028 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "As_Na2HAsO4_AsV_005_tr_avg": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -90 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "50 to 215.5 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 9 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "AS_CH_SynJar3_hiAs_026_fl_avg": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 658.8 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 12.112 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "AsPb_Jar_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 524.315 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.801 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Biotite_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 531.798 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.877 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "CH_Fh_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 525.791 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.816 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "CH_J1_noAs_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 523.702 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.795 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Chlorite_BS_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 532.392 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.883 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Fe_Rx_FeAsO4_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 523.998 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.798 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Fe_Rx_FeAsS_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 534.513 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.905 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Fe_Rx_Fh_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 525.801 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.816 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Fe_Rx_IK_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 523.998 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.798 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Fe_Rx_J_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 523.394 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.791 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Fe_Rx_Schw_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 523.993 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.798 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Goethite_Nat_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 526.094 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.819 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "KB_As_Fhyd_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 525.497 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.813 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "KB_As_Schw_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 524.609 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.804 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "KB_FeAsO4_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 524.609 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.804 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "KB_FeAsS_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 534.205 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.902 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "KB_J2_Jar_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 523.708 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.795 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Lepid_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 524.594 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.804 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Mag_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 540.498 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.966 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Py_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 534.5 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.905 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Schw_noAs_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 524.294 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.801 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Siderite_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 529.998 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.859 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Wustite_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 528.801 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.847 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "ZnFe2O4_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 521.582 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 10.773 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "ferrihydrite_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 738.283 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 12.833 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "magnetite_001": [
+    {
+      "field": "Pre-edge range",
+      "value": "-150 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "150 to 740.386 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 12.852 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "Alum_CLS_dat": [
+    {
+      "field": "Pre-edge range",
+      "value": "-30.2 to -10 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "30.8 to 100 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 3.393 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "S_PbJarosite_UAmineral_041912_fl_avg": [
+    {
+      "field": "Pre-edge range",
+      "value": "-40.64 to -30 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "91.05 to 150 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "3 to 5.081 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "S_CuFeS_4_3_Nov13": [
+    {
+      "field": "Pre-edge range",
+      "value": "-29.747 to -19.747 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "15 to 76.212 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "0.7 to 4.4 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ],
+  "pyrrhotite_ESRF_trans_norm_dat": [
+    {
+      "field": "Pre-edge range",
+      "value": "-19.5 to -9.5 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Normalization range",
+      "value": "15 to 60 eV relative to E0",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "Forward FT k-range",
+      "value": "1.968 to 3 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "k-weight",
+      "value": 2,
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT dk",
+      "value": "1 Å⁻¹",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    },
+    {
+      "field": "FT window",
+      "value": "Hanning",
+      "note": "User-curated processing parameter from Synchotron Dashboard Metadata Filled in.xlsx."
+    }
+  ]
+}
