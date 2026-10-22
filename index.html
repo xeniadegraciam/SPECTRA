@@ -808,17 +808,12 @@ function plotOffset(index, panel) {
   if (document.getElementById('inspectionMode').checked) return 0;
   return index * plotSetting(panel === 'exafs' ? 'exafsGap' : 'xanesGap');
 }
+// 🧪 Display the Athena/Larch normalized spectrum without a second baseline subtraction.
+// Amplification and vertical separation are display-only transformations.
 function preedgeDisplayValue(points, point, element) {
-  const y = Number(getNorm(point));
-  const limits = preedgeRanges[element] || [-Infinity, Infinity];
-  const valid = points.filter(p => Number.isFinite(Number(getX(p))) && Number.isFinite(Number(getNorm(p))) && Number(getX(p)) >= limits[0] && Number(getX(p)) <= limits[1]);
-  if (valid.length < 2) return y;
-  const first = valid[0], last = valid[valid.length-1];
-  const x0 = Number(getX(first)), x1 = Number(getX(last)), x = Number(getX(point));
-  if (x1 === x0) return y - Number(getNorm(first));
-  const baseline = Number(getNorm(first)) + (Number(getNorm(last))-Number(getNorm(first))) * (x-x0)/(x1-x0);
-  return y - baseline;
+  return Number(getNorm(point));
 }
+
 function redrawTunedPlots() {
   const selectedSampleId = document.getElementById('sampleSelect').value;
   const rows = getCurrentRows();
@@ -841,13 +836,12 @@ function setupPlotControls() {
       redrawTunedPlots();
     });
   }
-  for (const id of ['inspectionMode','preedgeBaseline']) {
+  for (const id of ['inspectionMode']) {
     document.getElementById(id).addEventListener('change', redrawTunedPlots);
   }
   document.getElementById('selectAllReferences').addEventListener('click', () => {
     const rows = getCurrentRows(); checkedReferenceIds = new Set(rows.map(row => row.sample_id));
     buildReferenceChecklist(rows); redrawTunedPlots();
-    document.getElementById('preedgeBaseline').checked = true;
   });
   document.getElementById('selectOnlyMain').addEventListener('click', () => {
     const rows = getCurrentRows(); checkedReferenceIds = new Set([document.getElementById('sampleSelect').value]);
@@ -859,7 +853,6 @@ function setupPlotControls() {
       document.getElementById(id+'Value').textContent = value + (id.endsWith('Gap') ? '' : '×');
     }
     document.getElementById('inspectionMode').checked = false;
-    document.getElementById('preedgeBaseline').checked = true;
     redrawTunedPlots();
   });
 }
@@ -906,7 +899,13 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
 
   const visibleRows = comparisonRows(rows, selectedSampleId);
   const traces = visibleRows.map(function(row, index) {
-    const points = preedgeCache[row.sample_id] || [];
+    const limits = preedgeRanges[row.element] || selectedRange;
+    const points = (preedgeCache[row.sample_id] || []).filter(point => {
+      const energy = Number(getX(point));
+      const absorption = Number(getNorm(point));
+      return Number.isFinite(energy) && Number.isFinite(absorption) &&
+             energy >= limits[0] && energy <= limits[1];
+    });
     const offset = plotOffset(index, "xanes");
     const isSelected = row.sample_id === selectedSampleId;
     const color = isSelected ? "#C00000" : referenceColor(row);
@@ -929,7 +928,7 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
   Plotly.newPlot("preedgePlot", traces, {
     title: boldTitle(selectedSample.element === "As" ? "As pre-edge region" : selectedSample.element + " pre-edge XANES"),
     xaxis: {title: boldTitle("Energy (eV)"), range:selectedRange, tickformat:".0f", tickmode:"linear", tick0:selectedSample.element === "As" ? 11860 : undefined, dtick:selectedSample.element === "As" ? 5 : undefined, exponentformat:"none", showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: boldTitle("pre-edge μ(E) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: boldTitle("Normalized μ(E) (display-scaled) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     showlegend:true,
     annotations: annotations,
     ...plotStyle
