@@ -74,6 +74,16 @@ tr:hover { background:#f9fafb; }
 .tuning-options label {display:inline-flex; align-items:center; gap:7px; margin:0; font-weight:500}
 .tuning-options button {padding:8px 12px; border:1px solid #cbd5e1; border-radius:7px; background:#f8fafc; cursor:pointer}
 @media(max-width:700px){.tuning-grid{grid-template-columns:1fr}}
+
+.reference-picker {background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:15px;margin:14px 0 20px}
+.reference-picker-header {display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
+.reference-picker-actions {display:flex;flex-wrap:wrap;gap:8px}
+.reference-picker-actions button,.png-button {background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;padding:7px 11px;cursor:pointer;font-weight:650}
+.reference-picker-list {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:7px;max-height:230px;overflow-y:auto;margin-top:12px}
+.reference-picker-list label {font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;margin:0}
+.reference-picker-list input {accent-color:#2563eb}
+.plot-card {min-width:0}
+.png-button {display:block;margin:8px 10px 8px auto}
 </style>
 </head>
 <body>
@@ -152,11 +162,17 @@ tr:hover { background:#f9fafb; }
   </div>
 </section>
 
+<section class="reference-picker" aria-label="Select references for comparison">
+  <div class="reference-picker-header"><div><strong>References to compare</strong><div class="small-note">Choose any subset. The main reference in the dropdown is always included and highlighted in red.</div></div>
+    <div class="reference-picker-actions"><button type="button" id="selectAllReferences">Select all</button><button type="button" id="selectOnlyMain">Main reference only</button><span id="referenceSelectionCount" class="small-note"></span></div>
+  </div>
+  <div id="referenceChecklist" class="reference-picker-list"></div>
+</section>
 <section class="plot-grid">
-<div class="plot-card"><div id="preedgePlot"></div></div>
-<div class="plot-card"><div id="xanesPlot"></div></div>
-<div class="plot-card" id="exafsPlotCard"><div id="exafsPlot"></div></div>
-<div class="plot-card" id="ftPlotCard"><div id="ftPlot"></div></div>
+<div class="plot-card"><div id="preedgePlot"></div><button class="png-button" type="button" onclick="downloadComparisonPNG('preedgePlot','preedge')">Download PNG</button></div>
+<div class="plot-card"><div id="xanesPlot"></div><button class="png-button" type="button" onclick="downloadComparisonPNG('xanesPlot','xanes')">Download PNG</button></div>
+<div class="plot-card" id="exafsPlotCard"><div id="exafsPlot"></div><button class="png-button" type="button" onclick="downloadComparisonPNG('exafsPlot','exafs')">Download PNG</button></div>
+<div class="plot-card" id="ftPlotCard"><div id="ftPlot"></div><button class="png-button" type="button" onclick="downloadComparisonPNG('ftPlot','ft_exafs')">Download PNG</button></div>
 </section>
 
 <h2 class="section-title">Selected reference metadata</h2>
@@ -696,10 +712,68 @@ function updateDownloadButton(sample) {
 // 📊 Display-only tuning; no spectral arrays or downloadable files are modified.
 const tuningDefaults = {preedgeGain:5, xanesGain:3, exafsGain:3, ftGain:3, verticalGap:2};
 function plotSetting(name) { return Number(document.getElementById(name).value); }
-function comparisonRows(rows, selectedSampleId) {
-  return document.getElementById('inspectionMode').checked
-    ? rows.filter(row => row.sample_id === selectedSampleId) : rows;
+// 🎨 Stable reference colors across all four plots and selection changes.
+const referencePalette = ['#0072B2','#009E73','#E69F00','#CC79A7','#56B4E9','#D55E00','#6A3D9A','#1B9E77','#7570B3','#A6761D','#E7298A','#66A61E','#4E79A7','#F28E2B','#76B7B2','#B07AA1','#59A14F','#EDC948'];
+let checkedReferenceIds = new Set();
+let referenceFilterKey = '';
+function referenceColor(row) {
+  const ids = databaseIndex.filter(r => r.element === row.element).map(r => r.sample_id).sort();
+  const idx = ids.indexOf(row.sample_id);
+  return referencePalette[(idx < 0 ? 0 : idx) % referencePalette.length];
 }
+function comparisonRows(rows, selectedSampleId) {
+  const included = rows.filter(row => checkedReferenceIds.has(row.sample_id) || row.sample_id === selectedSampleId);
+  return document.getElementById('inspectionMode').checked
+    ? included.filter(row => row.sample_id === selectedSampleId) : included;
+}
+function buildReferenceChecklist(rows, forceReset=false) {
+  const key = selectedMode + '|' + (selectedMode === 'element' ? selectedElement : selectedFacility + '|' + selectedBeamline);
+  if (forceReset || key !== referenceFilterKey) {
+    checkedReferenceIds = new Set(rows.map(row => row.sample_id));
+    referenceFilterKey = key;
+  }
+  const mainId = document.getElementById('sampleSelect').value;
+  const host = document.getElementById('referenceChecklist');
+  host.replaceChildren();
+  rows.forEach(row => {
+    const label = document.createElement('label');
+    const box = document.createElement('input');
+    box.type = 'checkbox'; box.checked = checkedReferenceIds.has(row.sample_id) || row.sample_id === mainId;
+    box.disabled = row.sample_id === mainId;
+    box.addEventListener('change', () => {
+      if (box.checked) checkedReferenceIds.add(row.sample_id);
+      else checkedReferenceIds.delete(row.sample_id);
+      updateSelectionCount(rows, mainId); redrawTunedPlots();
+    });
+    const swatch = document.createElement('span');
+    swatch.style.cssText = 'display:inline-block;width:12px;height:12px;border-radius:3px;flex-shrink:0;background:' + (row.sample_id === mainId ? '#C00000' : referenceColor(row));
+    const name = document.createElement('span'); name.textContent = getSampleLabel(row) + (row.sample_id === mainId ? ' (main)' : '');
+    label.append(box,swatch,name); host.appendChild(label);
+  });
+  updateSelectionCount(rows,mainId);
+}
+function updateSelectionCount(rows,mainId) {
+  const count = rows.filter(row => checkedReferenceIds.has(row.sample_id) || row.sample_id === mainId).length;
+  document.getElementById('referenceSelectionCount').textContent = count + ' of ' + rows.length + ' selected';
+}
+async function downloadComparisonPNG(plotId, kind) {
+  const graph = document.getElementById(plotId);
+  if (!graph || !graph.data || !graph.data.length) return;
+  const element = document.getElementById('sampleSelect').value;
+  const selected = databaseIndex.find(row => row.sample_id === element);
+  const prefix = selected?.element || 'XAS';
+  try {
+    await Plotly.downloadImage(graph, {format:'png',width:1500,height:950,scale:2,filename:prefix+'_'+kind+'_comparison'});
+  } catch (err) { console.error(err); alert('PNG export failed: '+err.message); }
+}
+const boldTitle = text => ({text:'<b>'+text+'</b>',font:{size:15,color:'#111827'}});
+const plotStyle = {
+  showlegend:true,
+  legend:{orientation:'v',x:1.01,xanchor:'left',y:1,yanchor:'top',font:{size:10},bgcolor:'rgba(255,255,255,0.85)'},
+  margin:{t:75,r:185,b:75,l:95},
+  paper_bgcolor:'#ffffff',plot_bgcolor:'#ffffff'
+};
+const plotConfig = {responsive:true,displaylogo:false,toImageButtonOptions:{format:'png',filename:'SPECTRA_comparison',width:1500,height:950,scale:2}};
 function plotOffset(index) {
   return document.getElementById('inspectionMode').checked ? 0 : index * plotSetting('verticalGap');
 }
@@ -740,6 +814,14 @@ function setupPlotControls() {
   for (const id of ['inspectionMode','preedgeBaseline']) {
     document.getElementById(id).addEventListener('change', redrawTunedPlots);
   }
+  document.getElementById('selectAllReferences').addEventListener('click', () => {
+    const rows = getCurrentRows(); checkedReferenceIds = new Set(rows.map(row => row.sample_id));
+    buildReferenceChecklist(rows); redrawTunedPlots();
+  });
+  document.getElementById('selectOnlyMain').addEventListener('click', () => {
+    const rows = getCurrentRows(); checkedReferenceIds = new Set([document.getElementById('sampleSelect').value]);
+    buildReferenceChecklist(rows); redrawTunedPlots();
+  });
   document.getElementById('resetTuning').addEventListener('click', () => {
     for (const [id, value] of Object.entries(tuningDefaults)) {
       document.getElementById(id).value = value;
@@ -796,16 +878,16 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
     const points = preedgeCache[row.sample_id] || [];
     const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
-    const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
+    const color = isSelected ? "#C00000" : referenceColor(row);
 
     return {
       x: points.map(getX),
       y: points.map(point => plotSetting("preedgeGain") * preedgeDisplayValue(points, point, row.element) + offset),
       type: "scatter",
       mode: "lines",
-      name: row.sample_id,
+      name: getSampleLabel(row) + (isSelected ? " ★ main" : ""),
       line: {color: color, width: isSelected ? 3.5 : 2},
-      opacity: isSelected ? 1.0 : 0.55,
+      opacity: isSelected ? 1.0 : 0.9,
       hovertemplate: "Energy: %{x:.2f} eV<br>offset normalized μ(E): %{y:.3f}<extra>" + getSampleLabel(row) + "</extra>"
     };
   });
@@ -814,13 +896,13 @@ function plotAdvisorPreedge(rows, selectedSampleId) {
 
 
   Plotly.newPlot("preedgePlot", traces, {
-    title: selectedSample.element + " pre-edge / XANES zoom",
-    xaxis: {title: "Energy (eV)", range:selectedRange, showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Display-scaled pre-edge μ(E) + offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
-    showlegend:false,
+    title: boldTitle(selectedSample.element + " pre-edge / XANES zoom"),
+    xaxis: {title: boldTitle("Energy (eV)"), range:selectedRange, tickformat:".0f", exponentformat:"none", showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: boldTitle("Display-scaled pre-edge μ(E) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    showlegend:true,
     annotations: annotations,
-    margin: {t:60, r:25, b:55, l:65}
-  }, {responsive:true});
+    ...plotStyle
+  }, plotConfig);
 }
 
 // ✅ normalized XANES full edge
@@ -839,16 +921,16 @@ function plotAdvisorXanes(rows, selectedSampleId) {
     const points = xanesCache[row.sample_id] || [];
     const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
-    const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
+    const color = isSelected ? "#C00000" : referenceColor(row);
 
     return {
       x: points.map(getX),
       y: points.map(point => plotSetting("xanesGain") * (Number(getNorm(point)) - 1) + offset),
       type: "scatter",
       mode: "lines",
-      name: row.sample_id,
+      name: getSampleLabel(row) + (isSelected ? " ★ main" : ""),
       line: {color: color, width: isSelected ? 3.5 : 2},
-      opacity: isSelected ? 1.0 : 0.55,
+      opacity: isSelected ? 1.0 : 0.9,
       hovertemplate: "Energy: %{x:.2f} eV<br>offset normalized μ(E): %{y:.3f}<extra>" + getSampleLabel(row) + "</extra>"
     };
   });
@@ -862,14 +944,14 @@ function plotAdvisorXanes(rows, selectedSampleId) {
   }
 
   Plotly.newPlot("xanesPlot", traces, {
-    title: selectedSample.element + " normalized XANES",
-    xaxis: {title: "Energy (eV)", range:selectedRange, showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Display-scaled normalized μ(E) + offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    title: boldTitle(selectedSample.element + " normalized XANES"),
+    xaxis: {title: boldTitle("Energy (eV)"), range:selectedRange, tickformat:".0f", exponentformat:"none", showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: boldTitle("Display-scaled normalized μ(E) + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     shapes: shapes,
     annotations: annotations,
-    showlegend:false,
-    margin: {t:60, r:25, b:55, l:65}
-  }, {responsive:true});
+    showlegend:true,
+    ...plotStyle
+  }, plotConfig);
 }
 
 
@@ -894,9 +976,7 @@ function plotAdvisorExafs(rows, selectedSampleId) {
     const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
 
-    const lineColor = isSelected
-      ? (elementInfo[row.element]?.dark_color || "#111111")
-      : "#111111";
+    const lineColor = isSelected ? "#C00000" : referenceColor(row);
 
     return {
       x: points.map(getK),
@@ -905,12 +985,12 @@ function plotAdvisorExafs(rows, selectedSampleId) {
       }),
       type: "scatter",
       mode: "lines",
-      name: row.sample_id,
+      name: getSampleLabel(row) + (isSelected ? " ★ main" : ""),
       line: {
         color: lineColor,
         width: isSelected ? 3.5 : 2
       },
-      opacity: isSelected ? 1.0 : 0.55,
+      opacity: isSelected ? 1.0 : 0.9,
       customdata: points.map(function(point) {
         return [
           getChi(point),
@@ -931,16 +1011,17 @@ function plotAdvisorExafs(rows, selectedSampleId) {
     "exafsPlot",
     traces,
     {
-      title: selectedSample.element + " EXAFS",
+      title: boldTitle(selectedSample.element + " EXAFS"),
       xaxis: {
-        title: "k (Å⁻¹)",
+        title: boldTitle("k (Å⁻¹)"),
         range: selectedRange,
+        tickformat: ".1f", exponentformat:"none",
         showline: true,
         mirror: true,
         ticks: "outside"
       },
       yaxis: {
-        title: "Display-scaled k²χ(k) + offset",
+        title: boldTitle("Display-scaled k²χ(k) + offset"),
         showticklabels: false,
         showline: true,
         mirror: true,
@@ -948,17 +1029,10 @@ function plotAdvisorExafs(rows, selectedSampleId) {
         zeroline: false
       },
       annotations: annotations,
-      showlegend: false,
-      margin: {
-        t: 60,
-        r: 25,
-        b: 55,
-        l: 70
-      }
+      showlegend: true,
+      ...plotStyle
     },
-    {
-      responsive: true
-    }
+    plotConfig
   );
 }
 
@@ -973,16 +1047,16 @@ function plotAdvisorFT(rows, selectedSampleId) {
     const points = ftCache[row.sample_id] || [];
     const offset = plotOffset(index);
     const isSelected = row.sample_id === selectedSampleId;
-    const color = isSelected ? (elementInfo[row.element]?.dark_color || "#111111") : "#111111";
+    const color = isSelected ? "#C00000" : referenceColor(row);
 
     return {
       x: points.map(getR),
       y: points.map(point => plotSetting("ftGain") * getFTMagnitude(point) + offset),
       type: "scatter",
       mode: "lines",
-      name: row.sample_id,
+      name: getSampleLabel(row) + (isSelected ? " ★ main" : ""),
       line: {color: color, width: isSelected ? 3.5 : 2},
-      opacity: isSelected ? 1.0 : 0.55,
+      opacity: isSelected ? 1.0 : 0.9,
       hovertemplate: "R + Δ: %{x:.2f} Å<br>offset FT magnitude: %{y:.3f}<extra>" + getSampleLabel(row) + "</extra>"
     };
   });
@@ -990,13 +1064,13 @@ function plotAdvisorFT(rows, selectedSampleId) {
   const annotations = []; // Sample IDs remain available in hover labels.
 
   Plotly.newPlot("ftPlot", traces, {
-    title: selectedSample.element + " EXAFS FT",
-    xaxis: {title: "R + Δ (Å)", range:[0, 6], showline:true, mirror:true, ticks:"outside"},
-    yaxis: {title: "Display-scaled FT magnitude + offset", showticklabels:false, showline:true, mirror:true, ticks:"outside"},
+    title: boldTitle(selectedSample.element + " EXAFS FT"),
+    xaxis: {title: boldTitle("R + Δ (Å)"), range:[0, 6], showline:true, mirror:true, ticks:"outside"},
+    yaxis: {title: boldTitle("Display-scaled FT magnitude + offset"), showticklabels:false, showline:true, mirror:true, ticks:"outside"},
     annotations: annotations,
-    showlegend:false,
-    margin: {t:60, r:25, b:55, l:70}
-  }, {responsive:true});
+    showlegend:true,
+    ...plotStyle
+  }, plotConfig);
 }
 
 // ✅ Load all sample files needed for current comparison group
@@ -1027,7 +1101,8 @@ async function updateSelectedSampleViews() {
     }
 
     const selectedSample = databaseIndex.find(row => row.sample_id === selectedSampleId);
-    await loadRowsForPlotting(rows);
+    buildReferenceChecklist(rows);
+    await loadRowsForPlotting(comparisonRows(rows, selectedSampleId));
 
     plotAdvisorPreedge(rows, selectedSampleId);
     plotAdvisorXanes(rows, selectedSampleId);
